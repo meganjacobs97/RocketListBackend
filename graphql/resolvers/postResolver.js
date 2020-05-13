@@ -43,6 +43,7 @@ const postResolver = {
             is_locked: false,
             //date_created: new Date(Date.now()),
             //date_created: new Data(args.postInput.date).toISOString(); 
+            points: 0,
             subcategory: args.postInput.subcategoryId,
             author: args.postInput.authorId
         })

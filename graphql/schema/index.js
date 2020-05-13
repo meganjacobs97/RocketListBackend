@@ -12,6 +12,7 @@ const schema = buildSchema(`
         username: String!
         password: String
         email: String!
+        points: Int
         posts: [Post]
         replies: [Reply]
     }
@@ -34,6 +35,7 @@ const schema = buildSchema(`
         title: String!
         body: String
         is_locked: Boolean!
+        points: Int
         subcategory: Subcategory!
         author: User!
         replies: [Reply!]
@@ -59,6 +61,7 @@ const schema = buildSchema(`
         title: String
         body: String
         is_locked: Boolean
+        points: Int
         subcategoryId: String
         authorId: String
     }
@@ -66,6 +69,7 @@ const schema = buildSchema(`
         username: String
         password: String
         email: String
+        points: Int
     }
     input ReplyInput {
         date_created: String

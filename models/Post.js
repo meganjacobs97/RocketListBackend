@@ -14,6 +14,7 @@ const PostSchema = new Schema({
         type: Boolean, 
         required: true 
     }, 
+    points: Number,
     subcategory: { 
         type: Schema.Types.ObjectId,
         ref: "Subcategory",
