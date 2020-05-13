@@ -1,0 +1,276 @@
+CREATE A USER 
+mutation {
+  createUser(userInput: {
+    	username: "testUser2"
+      password: "password"
+    	email: "test2@test.com"
+  }) {
+    username
+    email
+  }
+}
+
+GET ALL USERS
+query {
+  users {
+    username
+    email
+  }
+}
+
+GET A SPECIFIC USER 
+query {
+  user(id: "5ebad966bd27cc2340f6239d") {
+    username
+    email
+  }
+}
+
+UPDATE A USER 
+mutation {
+  updateUser(id: "5ebad9edbd27cc2340f6239e", userInput: {
+    	username: "testUser2RenamedAgain"
+    	email: "test2Renamed@test.com"
+  }) {
+    username
+    email
+  }
+}
+
+CREATE A CATEGORY 
+mutation {
+  createCategory(categoryInput: {
+    	name: "example category2"
+      description: "description2"
+  }) {
+    name
+    description
+  }
+}
+
+GET ALL CATEGORIES 
+query {
+  categories {
+    name
+    description
+  }
+}
+
+GET ONE CATEGORY 
+query {
+  category(id: "5ebae4c7b4a2b908747e208d") {
+    name
+    description
+  }
+}
+
+UPDATE A CATEGORY 
+mutation {
+  updateCategory(id: "5ebae4c7b4a2b908747e208d", categoryInput: {
+    	name: "testCat2"
+    	description: "description2Renamed"
+  }) {
+    name
+    description
+  }
+}
+
+
+CREATE A SUBCATEGORY
+mutation {
+  createSubcategory(subcategoryInput: {
+    	name: "example subcategory"
+      description: "subcategory description"
+    	categoryId: "5ebc272e7d2f337224ae4f7c"
+  }) {
+    name
+    description
+    category {
+      name
+      description
+    }
+  }
+}
+
+
+GET ONE SUBCATEGORY 
+query {
+  subcategory(id: "5ebc2d6ca379730c18b1419a") {
+    name
+    description
+  }
+}
+
+
+GET ALL SUBCATEGORIES 
+query {
+  subcategories {
+    name
+    description
+    _id
+  }
+}
+
+
+UPDATE A SUBCATEGORY 
+mutation {
+  updateSubcategory(id: "5ebc2d6ca379730c18b1419a", subcategoryInput: {
+    	name: "test subcategory"
+    	description: "description"
+  }) {
+    name
+    description
+    category {
+      name 
+      description
+    }
+  }
+}
+
+
+CREATE A POST 
+mutation {
+  createPost(postInput: {
+    	title: "title"
+      	body: "body"
+    	subcategoryId: "5ebae4c7b4a2b908747e208d"
+    	authorId: "5ebafe546a230a0d74368626"
+  }) {
+    title
+    body
+    date_created
+    replies {
+      body
+    }
+    subcategory {
+      name
+      description
+	category {
+		name
+		description 
+	}
+    }
+    author {
+      username
+    }
+  }
+}
+
+GET ALL POSTS 
+query {
+  posts {
+    title
+    body
+    date_created
+    author {
+      username
+    }
+    subcategory {
+      name
+      description
+	category {
+		name
+		description 
+	}
+    }
+    replies {
+      body
+    }
+  }
+}
+
+GET A SPECIFIC POST 
+query {
+  post(id: "5ebaff33560e1c6fa463a73f") {
+    title
+    body
+    date_created
+    author {
+      username
+    }
+    subcategory {
+      name
+      description
+	category {
+		name
+		description 
+	}
+    }
+    replies {
+      body
+    }
+  }
+}
+
+UPDATE A POST 
+mutation {
+  updatePost(id: "5ebaff33560e1c6fa463a73f", postInput: { 
+    	title: "postRenamed"
+    	body: "new body"
+  }) {
+    title
+    body
+    date_created
+    author {
+      username
+    }
+    subcategory {
+      name
+      description
+	category {
+		name
+		description 
+	}
+    }
+    replies {
+      body
+    }
+  }
+}
+
+CREATE A REPLY 
+mutation {
+  createReply(replyInput: {
+    	body: "reply body"
+    	postId: "5ebaff33560e1c6fa463a73f"
+    	authorId: "5ebafe546a230a0d74368626" 
+  }) {
+    body
+    date_created
+    post {
+      title
+      body
+      date_created
+    }
+    author {
+      username
+    }
+  }
+}
+
+UPDATE A REPLY 
+mutation {
+  updateReply(id: "5ebb104aededce0bd82f15fa", replyInput: { 
+    	body: "changed reply body"
+  }) {
+   body
+  	date_created
+    post {
+      title
+      body
+      date_created
+    }
+    author {
+      username
+    }
+  }
+}
+
+DELETE A REPLY 
+mutation {
+  deleteReply(id: "5ebb2653130f8336604a9a4c") {
+ 	_id
+	title
+  } 
+}
+
