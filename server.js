@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors"); 
 
 const mongoose = require("mongoose");
 
@@ -16,16 +17,8 @@ if (process.env.NODE_ENV === "production") {
   app.use(express.static("client/build"));
 }
 
-//allow cross-server requests 
-app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'POST,GET,OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    if (req.method === 'OPTIONS') {
-      return res.sendStatus(200);
-    }
-    next();
-  });
+//allow cross-server requests - TODO: specify deployed sites 
+app.use(cors()); 
 
 // Connect to the Mongo DB
 mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/rocketlist");
