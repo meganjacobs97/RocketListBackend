@@ -18,6 +18,7 @@ const UserSchema = new Schema({
     type: String,
     required: true
   },
+  points: Number,
   posts: [
     {
       type: Schema.Types.ObjectId,
