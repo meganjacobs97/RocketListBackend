@@ -16,7 +16,7 @@ const SubcategorySchema = new Schema({
     category: { 
         type: Schema.Types.ObjectId,
         ref: "Category",
-    autopopulate: true 
+        autopopulate: true 
     }, 
     posts: [ 
     { 

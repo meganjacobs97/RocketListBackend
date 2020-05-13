@@ -87,6 +87,8 @@ const schema = buildSchema(`
         categoryId: String 
     }
 
+    input SortUsers
+
     type RootQuery {
         posts: [Post!]!
         users: [User!]!        
