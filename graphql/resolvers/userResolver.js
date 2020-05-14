@@ -8,7 +8,15 @@ const userResolver = {
     //GETS A USER - WORKING 
     user: args => {
         return db.User.findOne({_id:args.id}).then(user=> {
-            return {...user._doc}; 
+            if(args.sortByPosts) {
+
+            } 
+            else if(args.sortByPoints) {
+
+            }
+            else {
+                return {...user._doc}; 
+            } 
         })
         .catch(err => {
             console.log(err); 
@@ -17,6 +25,7 @@ const userResolver = {
         
     }, 
     //GETS ALL USERS - WORKING
+    //takes in optional booleans to sort all users by points and to sort all users by number of posts and replies 
     users: args => {
         //return here so graphql knows we are doing something async and wont return until done 
         return db.User
@@ -81,7 +90,13 @@ const userResolver = {
         })
     }
 }
+//helper by functions 
+sortByPosts = (unsorted) => {
 
+}
+sortByPoints = (unsorted) => {
+    
+}
 
 
 module.exports = userResolver; 

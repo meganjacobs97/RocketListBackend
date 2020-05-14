@@ -102,7 +102,7 @@ const schema = buildSchema(`
 
     type RootQuery {
         posts: [Post!]!
-        users: [User!]!        
+        users(sortByPosts: Boolean,sortByPoints: Boolean): [User!]!        
         categories: [Category!]!
         category(id: ID!): Category 
         subcategory(id: ID!): Subcategory
