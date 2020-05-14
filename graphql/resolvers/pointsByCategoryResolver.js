@@ -70,6 +70,7 @@ const pointsByCategoryResolver = {
 
     },
     //takes in a category id and return an array of pointsbycategory objects sorted in descending order by points - WORKING
+    //THIS IS HOW YOU SORT TOP USERS (POINTS-WISE) BY CATEGORY
     pointsByCategory: args => {
         return db.PointsByCategory.find({
             category: args.categoryId
@@ -83,13 +84,14 @@ const pointsByCategoryResolver = {
         })
     },
     //takes in a user id and category id and adds the passed number of points to the current number of points; returns the updated pointsbycategory - WORKING
-    //NOTE: THIS DOES NOT UPDATE THE "POINTS" FIELD FOR THE USER; MUST DO A SEPARATE CALL FOR THAT 
+    //NOTE: THIS ALSO UPDATES THE POINTS FIELD FOR THE USER 
     updatePointsByCategory: args => {
         const filter = {
             user: args.userId,
             category: args.categoryId
         }
         let userPoints; 
+        let pointsByCategoryResult; 
         //first query to get current points 
         return db.PointsByCategory.findOne(filter)
         .then(pointsByCategory => {
@@ -98,7 +100,11 @@ const pointsByCategoryResolver = {
             return db.PointsByCategory.findOneAndUpdate(filter,{points: userPoints}, {new: true})
         })
         .then(updatedPointsByCategory => {
-            return updatedPointsByCategory; 
+            pointsByCategoryResult = updatedPointsByCategory; 
+            return db.User.findByIdAndUpdate(args.userId,{points: userPoints})
+        })
+        .then(updatedUser => {
+            return pointsByCategoryResult; 
         })
         .catch(err => {
             console.log(err); 
