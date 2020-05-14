@@ -49,6 +49,7 @@ const postResolver = {
         })
         //to store the post that we are creating so that we can return it at the end 
         let createdPost; 
+        let numUserPosts; 
         //store post to database 
         return db.Post
         .create(newPost).then(result => {
@@ -68,14 +69,20 @@ const postResolver = {
             }
             //add created post to the user 
             user.posts.push(newPost); 
-            //update user 
+            //grab current numposts and increment 
+            numUserPosts = user.numPosts + 1; 
+            //update user
             return user.save(); 
 
         })
         .then(userResult => {
-            return db.Subcategory.findById(args.postInput.subcategoryId)
             //result now refers to the updated user
-
+            //still need to update numPosts 
+            db.User.findByIdAndUpdate(args.postInput.authorId,{numPosts: numUserPosts})
+        })
+        .then(userUpdateResult => {
+            //update the subcategory 
+            return db.Subcategory.findById(args.postInput.subcategoryId)
         })
         .then(subcategory => {
             //if we get this error then something has gone wrong on dev end  

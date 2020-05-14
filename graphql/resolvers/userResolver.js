@@ -8,15 +8,9 @@ const userResolver = {
     //GETS A USER - WORKING 
     user: args => {
         return db.User.findOne({_id:args.id}).then(user=> {
-            if(args.sortByPosts) {
-
-            } 
-            else if(args.sortByPoints) {
-
-            }
-            else {
-                return {...user._doc}; 
-            } 
+            
+            return {...user._doc}; 
+            
         })
         .catch(err => {
             console.log(err); 
@@ -38,6 +32,16 @@ const userResolver = {
                     password: null
                 }
             })
+        }).then(usersUnsorted => {
+            if(args.sortByPosts) {
+                return(sortByPosts(usersUnsorted)); 
+            } 
+            else if(args.sortByPoints) {
+                return(sortByPoints(usersUnsorted)); 
+            }
+            else {
+                return usersUnsorted; 
+            }
         }).catch(err => {
             console.log(err); 
             throw err; 
@@ -92,10 +96,34 @@ const userResolver = {
 }
 //helper by functions 
 sortByPosts = (unsorted) => {
+    let sortedResults = unsorted; 
+    sortedResults.sort(function(a, b){
+        if(a.numPosts > b.numPosts) { 
+            return -1; 
+        }
+        else if(a.numPosts < b.numPosts) {
+            return 1; 
+        }
+        return 0;
+    })
+    //return sorted
+    return sortedResults; 
+
 
 }
 sortByPoints = (unsorted) => {
-    
+    let sortedResults = unsorted; 
+    sortedResults.sort(function(a, b){
+        if(a.points > b.points) { 
+            return -1; 
+        }
+        else if(a.points < b.points) {
+            return 1; 
+        }
+        return 0;
+    })
+    //return sorted
+    return sortedResults; 
 }
 
 

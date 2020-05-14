@@ -4,39 +4,7 @@ const db = require("../../models");
 const pointsByCategoryResolver = {
     //takes in user id, category id, and initializes with one point - WORKING 
     createPointsByCategory: args => {
-        const newObj = new db.PointsByCategory({
-            user: args.pointsByCategoryInput.userId, 
-            category: args.pointsByCategoryInput.categoryId,
-            points: 1
-        })
-        let pointsByCategoryResult; 
-        //save to database
-        return db.PointsByCategory
-        .create(newObj).then(result => {
-            console.log(result);
-            //return the new user
-            //return a null value for the password 
-            pointsByCategoryResult = {...result._doc
-                //_id: result.id
-            }; 
-            return db.User.findById(args.pointsByCategoryInput.userId)
-        }).then(user => {
-            if(!user) {
-                throw new Error("user id does not exist")
-            }
-            //add to user's array 
-            user.pointsByCategory.push(pointsByCategoryResult)
-            //update ust 
-            return user.save()
-        }).then(userResult => {
-            console.log(pointsByCategoryResult); 
-            return pointsByCategoryResult; 
-        })
-        .catch(err => {
-            console.log(err); 
-            throw err; 
-        })
-
+        createPointsByCategoryFunc(args.pointsByCategoryInput); 
     },
     //takes in a userId & categoryId. returns the points for that category for that user - WORKING 
     pointsByCategoryByUser: args => {
@@ -95,7 +63,31 @@ const pointsByCategoryResolver = {
         //first query to get current points 
         return db.PointsByCategory.findOne(filter)
         .then(pointsByCategory => {
-            userPoints = pointsByCategory._doc.points + args.pointsByCategoryInput.points; 
+            //if null, need to create 
+            if(!pointsByCategory) {
+               return createPointsByCategoryFunc({userId: args.userId, categoryId:args.categoryId})
+               .then(returnval => {
+                console.log(returnval); 
+                userPoints = returnval.user.points + args.pointsByCategoryInput.points
+                return db.PointsByCategory.findOneAndUpdate(filter,{points: userPoints}, {new: true})
+                })
+                .then(updatedPointsByCategory => {
+                    pointsByCategoryResult = updatedPointsByCategory; 
+                    return db.User.findByIdAndUpdate(args.userId,{points: userPoints})
+                })
+                .then(updatedUser => {
+                    return pointsByCategoryResult; 
+                })
+               .catch(err => {
+                   console.log(err); 
+                   throw err; 
+               })
+               
+            }
+            else {
+                userPoints = pointsByCategory._doc.points + args.pointsByCategoryInput.points; 
+            }
+            
             //then update 
             return db.PointsByCategory.findOneAndUpdate(filter,{points: userPoints}, {new: true})
         })
@@ -116,7 +108,6 @@ const pointsByCategoryResolver = {
 //helper functions 
 sortArray = (unsortedArray) => {
     let sortedResults = unsortedArray; 
-    console.log(sortedResults)
     sortedResults.sort(function(a, b){
         if(a.points > b.points) { 
             return -1; 
@@ -128,6 +119,40 @@ sortArray = (unsortedArray) => {
     })
     //return sorted
     return sortedResults; 
+}
+
+//separated into a function in case we need to call separately
+createPointsByCategoryFunc = (args) => {
+    const newObj = new db.PointsByCategory({
+        user: args.userId, 
+        category: args.categoryId,
+        points: 1
+    })
+    let pointsByCategoryResult; 
+    //save to database
+    return db.PointsByCategory
+    .create(newObj).then(result => {
+        //return the new user
+        //return a null value for the password 
+        pointsByCategoryResult = {...result._doc
+            //_id: result.id
+        }; 
+        return db.User.findById(args.userId)
+    }).then(user => {
+        if(!user) {
+            throw new Error("user id does not exist")
+        }
+        //add to user's array 
+        user.pointsByCategory.push(pointsByCategoryResult)
+        //update ust 
+        return user.save()
+    }).then(userResult => {
+        return pointsByCategoryResult; 
+    })
+    .catch(err => {
+        console.log(err); 
+        throw err; 
+    })
 }
 
 module.exports = pointsByCategoryResolver; 
