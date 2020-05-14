@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors"); 
+const { ApolloServer } = require ('apollo-server-express');
 
 const mongoose = require("mongoose");
 
@@ -28,6 +29,20 @@ mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/rocketlist");
 const graphqlResolvers = require("./graphql/resolvers");
 const graphqlSchema = require("./graphql/schema");
 
+const server = new ApolloServer({
+  schema: graphqlSchema,
+  resolvers: graphqlResolvers,
+  context() {
+      console.log('\n\n\n\n');
+      return { x: 0 };
+  },
+  formatError(e) {
+      console.error(e);
+      console.log(JSON.stringify(e, null, '\t'));
+      return e;
+  }
+});
+
 //graphql has only one endpoint
 app.use('/api', expressGraphql({
     
@@ -37,6 +52,8 @@ app.use('/api', expressGraphql({
     //TODO: delete before deployment 
     graphiql: true
 }))
+
+server.applyMiddleware({ app });
 
 // Start the API server
 app.listen(PORT, function() {
