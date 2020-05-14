@@ -12,7 +12,7 @@ const CategorySchema = new Schema({
   description: { 
     type: String, 
     required: true
-  }, 
+  },
   subcategories: [ 
     { 
       type: Schema.Types.ObjectId,
