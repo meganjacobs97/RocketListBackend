@@ -19,7 +19,8 @@ const UserSchema = new Schema({
     required: true
   },
   points: Number,
-  posts: Number,
+  //keeps track of total number of posts and replies 
+  numPosts: Number,
   pointsByCategory: [
     {
       type: Schema.Types.ObjectId,

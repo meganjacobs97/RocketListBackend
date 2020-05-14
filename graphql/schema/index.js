@@ -110,7 +110,6 @@ const schema = buildSchema(`
         post(id: ID!): Post
         user(id: ID!): User
         pointsByCategoryByUser(userId: ID!, categoryId: ID!): PointsByCategory
-        allPointsByUser(userId: ID!): Int
         pointsByCategory(categoryId: ID!): [PointsByCategory]
     }
     

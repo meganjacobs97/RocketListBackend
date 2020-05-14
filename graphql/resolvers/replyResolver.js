@@ -12,6 +12,7 @@ const replyResolver = {
         })
         //to store the post that we are creating so that we can return it at the end 
         let createdReply; 
+        let userNumPosts; 
         //store reply to database 
         return db.Reply
         .create(newReply).then(result => {
@@ -31,12 +32,19 @@ const replyResolver = {
             }
             //add created post to the user 
             user.replies.push(newReply); 
+            //grab current number of posts and increment
+            userNumPosts = user.numPosts + 1; 
             //update user 
             return user.save(); 
 
         })
         //result now refers to the updated user
         .then(userResult => {
+            //still have to update numPosts 
+            return db.User.findByIdAndUpdate(args.replyInput.authorId,{numPost: userNumPosts})
+        })
+        .then(updatedUser => {
+            //update post 
             return db.Post.findById(args.replyInput.postId)
         })
         .then(post => {
