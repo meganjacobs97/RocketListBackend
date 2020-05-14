@@ -47,6 +47,12 @@ const schema = buildSchema(`
         post: Post!
         author: User!
     }
+    type PointsByCategory {
+        _id: ID!
+        category: Category! 
+        user: User!
+        points: Int 
+    }
     type AuthData {
         userId: ID!
         token: String!
@@ -86,8 +92,13 @@ const schema = buildSchema(`
         description: String 
         categoryId: String 
     }
+    input PointsByCategoryInput {
+        points: Int
+        categoryId: String 
+        userId: String 
+    }
 
-    input SortUsers
+    
 
     type RootQuery {
         posts: [Post!]!
@@ -98,7 +109,9 @@ const schema = buildSchema(`
         subcategories: [Subcategory!]!
         post(id: ID!): Post
         user(id: ID!): User
-        
+        pointsByCategoryByUser(userId: ID!, categoryId: ID!): PointsByCategory
+        allPointsByUser(userId: ID!): Int
+        pointsByCategory(categoryId: ID!): [PointsByCategory]
     }
     
     type RootMutation {
@@ -113,6 +126,9 @@ const schema = buildSchema(`
         deleteReply(id: ID!): Post! 
         createSubcategory(subcategoryInput: SubcategoryInput): Subcategory 
         updateSubcategory(id: ID!, subcategoryInput: SubcategoryInput): Subcategory
+        updatePointsByCategory(userId: ID!,categoryId: ID!,pointsByCategoryInput: PointsByCategoryInput): PointsByCategory 
+        createPointsByCategory(pointsByCategoryInput: PointsByCategoryInput): PointsByCategory
+        
     }
 
     schema {
