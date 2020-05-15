@@ -23,12 +23,13 @@ const postResolver = {
             }
             else {
                 //sort replies 
-                let returnPosts = {...posts}; 
-                if(returnPosts.replies)
-                {
-                    returnPosts.replies = sortRepliesByPoints(returnPosts.replies); 
+                let returnPosts = posts; 
+                for(let i = 0; i < returnPosts.length; i++) {
+                    if(returnPosts[i].replies && returnPosts[i].replies.length > 0) { 
+                        returnPosts[i].replies = sortRepliesByPoints(returnPosts[i].replies); 
+                    }        
                 }
-
+                
                 return returnPosts; 
             }
             
