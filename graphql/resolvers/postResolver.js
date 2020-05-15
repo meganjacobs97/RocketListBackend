@@ -17,16 +17,17 @@ const postResolver = {
     posts: (args) => {
         //return here so graphql knows we are doing something async and wont return until done 
         return db.Post
-        //TODO: specify args in the {} for the data we want back
         .find({}).then(posts => {
-            //map so that we're not returning all the metadata
-            //have to convert the id to a string otherwise we will get an error (TODO: maybe we dont need to do this)
-            return posts.map(post => {
-                return {...post._doc, 
-                    //_id: post.id
-                    //date_created: new Data(post._doc.date_created).toISOString(); 
-                }
-            })
+            if(!args.postInput.sortRepliesByPoints) {
+                return posts; 
+            }
+            else {
+                //sort replies 
+                let returnPosts = {...posts}; 
+                returnPosts.replies = returnPosts.replies.sortRepliesByPoints(); 
+                return returnPosts; 
+            }
+            
         }).catch(err => {
             console.log(err); 
             throw err; 
@@ -181,6 +182,19 @@ createPostsByCategoryFunction = (args) => {
     })
 }
 
-
+sortRepliesByPoints = (unsorted) => {
+    let sortedResults = unsorted; 
+    sortedResults.sort(function(a, b){
+        if(a.points > b.points) { 
+            return -1; 
+        }
+        else if(a.points < b.points) {
+            return 1; 
+        }
+        return 0;
+    })
+    //return sorted
+    return sortedResults; 
+}
 
 module.exports = postResolver; 

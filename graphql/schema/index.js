@@ -48,6 +48,7 @@ const schema = buildSchema(`
         body: String!
         post: Post!
         author: User!
+        points: Int
     }
     type PointsByCategory {
         _id: ID!
@@ -79,6 +80,7 @@ const schema = buildSchema(`
         subcategoryId: String
         categoryId: String 
         authorId: String
+        sortRepliesByPoints:Boolean
     }
     input UserInput {
         username: String
@@ -90,7 +92,9 @@ const schema = buildSchema(`
         date_created: String
         body: String
         postId: String
+        categoryId: String 
         authorId: String
+        points: Int
     }
     input CategoryInput {
         name: String

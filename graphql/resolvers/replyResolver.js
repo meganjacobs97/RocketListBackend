@@ -8,7 +8,8 @@ const replyResolver = {
         const newReply = new db.Reply({
             body: args.replyInput.body, 
             post: args.replyInput.postId, 
-            author: args.replyInput.authorId
+            author: args.replyInput.authorId,
+            points: 0
         })
         //to store the post that we are creating so that we can return it at the end 
         let createdReply; 
@@ -56,7 +57,6 @@ const replyResolver = {
             post.replies.push(createdReply); 
             //update user 
             return post.save(); 
-            
         })
         .then(postResult => {
             //result now refers to the updated post data (not the post itself) 
@@ -71,16 +71,44 @@ const replyResolver = {
     //UPDATES A REPLY AND RETURNS THE POST THE UPDATED REPLY - WORKING 
     updateReply: args => {
         const filter = {_id: args.id}; 
-        
+        let updatedReply;
+        let replyPoints;  
         //update reply 
         //new true returns back the newly updated doc instead of the old one 
         return db.Reply.findOneAndUpdate(filter,args.replyInput, {new: true})
         .then(updatedReply=>{
+            replyPoints = updatedReply.replyPoints; 
             //find the post that the reply we just updated belongs to 
             return db.Reply.findById(args.id); 
         }).then(reply => {
-            //return the updated post 
-            return {...reply._doc}; 
+            updatedReply = {...reply._doc}; 
+            //if we updated the points
+            if(args.replyInput.points) {
+                //need to update the postsByCategory
+                filter = {
+                    user: args.replyInput.authorId,
+                    category: args.replyInput.categoryId
+                }
+                replyPoints++; 
+                //first query to get current posts
+                return db.PointsByCategory.findOne(filter)
+                .then(pointsByCategory => {
+                    //if null, need to create 
+                    if(!pointsByCategory) {
+                        return createPointsByCategoryFunction({userId: args.replyInput.authorId, categoryId:args.replyInput.categoryId, points:replyPoints})
+                    }
+                    //otherwise we can update
+                    else {
+                        return db.PointsByCategory.findOneAndUpdate(filter,{points: replyPoints}, {new: true})
+                    }
+                })
+            } 
+            else {
+                return updatedReply; 
+            }
+        })
+        .then(result => {
+            return updatedReply; 
         })
         .catch(err => {
             console.log(err); 
@@ -111,6 +139,37 @@ const replyResolver = {
 
 }
 
+createPointsByCategoryFunction = (args) => {
+    const newObj = new db.PointsByCategory({
+        user: args.userId, 
+        category: args.categoryId,
+        points: args.points
+    })
+    let pointsByCategoryResult; 
+    //save to database
+    return db.PointsByCategory
+    .create(newObj).then(result => {
+        pointsByCategoryResult = {...result._doc
+            //_id: result.id
+        }; 
+        return db.User.findById(args.userId)
+    }).then(user => {
+        if(!user) {
+            throw new Error("user id does not exist")
+        }
+        //add to user's array 
+        user.pointsByCategory.push(pointsByCategoryResult)
+        //update user
+        return user.save()
+    }).then(userResult => {
+        return pointsByCategoryResult; 
+    })
+    .catch(err => {
+        console.log(err); 
+        throw err; 
+    })
+
+}
 
 
 module.exports = replyResolver; 
