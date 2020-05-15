@@ -1,8 +1,6 @@
 //import mongoDB models 
 const db = require("../../models"); 
 
-//NEED TO CREATE POSTS OBJECT / UPDATE POSTS OBJECT 
-
 const replyResolver = {
     //CREATE A REPLY AND RETURN REPLY - WORKING 
     createReply: args => {
@@ -17,11 +15,12 @@ const replyResolver = {
         //to store the post that we are creating so that we can return it at the end 
         let createdReply; 
         let userNumPosts; 
+        let userId = args.replyInput.authorId; 
+        let categoryId = args.replyInput.categoryId; 
         //store reply to database 
         return db.Reply
         .create(newReply).then(result => {
             //result refers to the reply that we just created 
-            console.log(result);
             //...result._doc returns result without all the associated metadata 
             //specify result.id otherwise we will get an error (TODO - maybe dont need this?)
             createdReply = {...result._doc, 
@@ -38,6 +37,8 @@ const replyResolver = {
             user.replies.push(newReply); 
             //grab current number of posts and increment
             userNumPosts = user.numPosts + 1; 
+            console.log(user.numPosts); 
+            console.log(userNumPosts)
             //update user 
             return user.save(); 
 
@@ -48,6 +49,20 @@ const replyResolver = {
             return db.User.findByIdAndUpdate(args.replyInput.authorId,{numPosts: userNumPosts},{new:true})
         })
         .then(updatedUser => {
+            //update posts by category 
+            return db.PostsByCategory.findOne({user:userId,category:categoryId})
+        })
+        .then(postsByCategory => {
+            //if we need to create 
+            if(!postsByCategory) {
+                return createPostsByCategoryFunction({user:userId,category:categoryId})
+            }
+            else {
+                console.log(postsByCategory.posts);
+                let newPosts = postsByCategory.posts + 1; 
+                return db.PostsByCategory.findOneAndUpdate({user:userId,category:categoryId},{posts:newPosts})
+            }
+        }).then(res => {
             //update post 
             return db.Post.findById(args.replyInput.postId)
         })
@@ -136,7 +151,7 @@ const replyResolver = {
         let postId; 
         return db.Reply.findOne({_id:args.id}
         ).then(reply => {
-            console.log(reply)
+            
             postId = reply._doc.post._id; 
             //delete the reply 
             return db.Reply.deleteOne({_id:args.id})
@@ -155,8 +170,6 @@ const replyResolver = {
 }
 
 createPointsByCategoryFunction = (args) => {
-    
-
     const newObj = new db.PointsByCategory({
         user: args.user, 
         category: args.category,
@@ -188,6 +201,39 @@ createPointsByCategoryFunction = (args) => {
         throw err; 
     })
 
+}
+
+createPostsByCategoryFunction = (args) => {
+    const newObj = new db.PostsByCategory({
+        user: args.user, 
+        category: args.category,
+        posts: 1
+    })
+    let postsByCategoryResult; 
+    //save to database
+    return db.PostsByCategory
+    .create(newObj).then(result => {
+        //return the new user
+        //return a null value for the password 
+        postsByCategoryResult = {...result._doc
+            //_id: result.id
+        }; 
+        return db.User.findById(args.user)
+    }).then(user => {
+        if(!user) {
+            throw new Error("user id does not exist")
+        }
+        //add to user's array 
+        user.postsByCategory.push(postsByCategoryResult)
+        //update ust 
+        return user.save()
+    }).then(userResult => {
+        return postsByCategoryResult; 
+    })
+    .catch(err => {
+        console.log(err); 
+        throw err; 
+    })
 }
 
 
