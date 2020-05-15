@@ -416,3 +416,16 @@ query {
 }
 
 14. Give some points to replies 
+
+`mutation {
+    updateReply(id:"[REPLY ID]", replyInput: {
+        points: 1
+  }) {
+  	_id
+    author {
+        username
+        }
+    body
+    points
+  }
+}`

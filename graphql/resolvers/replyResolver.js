@@ -88,62 +88,77 @@ const replyResolver = {
     }, 
     //UPDATES A REPLY AND RETURNS THE POST THE UPDATED REPLY - WORKING 
     updateReply: args => {
-        let filter = {_id: args.id}; 
-        let updatedReply; 
-        let userPoints; 
-        let userId; 
-        let pointsAdded; 
-        //update reply 
-        //first have to get old points 
-        return db.Reply.findById(args.id)
-        .then(oldReply => {
-            let newPoints 
-            if(args.replyInput) {
-                pointsAdded = args.replyInput.points; 
-            }
-            else {
-                pointsAdded = 1;    
-            }
-            newPoints = oldReply.points + pointsAdded;
+        if(args.replyInput !== null && args.replyInput.points === null ) {
+            const filter = {_id: args.id};     
+        
+            //update reply 
             //new true returns back the newly updated doc instead of the old one 
-            return db.Reply.findOneAndUpdate(filter,{points:newPoints}, {new: true})
-        }).then(reply => {
-            updatedReply = {...reply._doc}; 
-            userPoints = updatedReply.author.points + pointsAdded; 
-            userId = updatedReply.author._id; 
-            
-            //need to update the postsByCategory
-            filter = {
-                user: updatedReply.author._id,
-                category: updatedReply.category._id
-            }
-            //first query to get current posts
-            return db.PointsByCategory.findOne(filter)
-            .then(pointsByCategory => {
-                
-                //if null, need to create 
-                if(!pointsByCategory) {
-                    filter.points = pointsAdded; 
-                    return createPointsByCategoryFunction(filter)
-                }
-                //otherwise we can update
-                else {
-                    newPoints = pointsByCategory.points += pointsAdded; 
-                    return db.PointsByCategory.findOneAndUpdate(filter,{points: newPoints}, {new: true})
-                }
+            return db.Reply.findOneAndUpdate(filter,args.replyInput, {new: true})
+            .then(updatedReply=>{
+                return {...updatedReply._doc}; 
+            }).catch(err => {
+                console.log(err); 
+                throw err; 
             })
-           
-        })
-        .then(result => {
-            return db.User.findByIdAndUpdate(userId,{points:userPoints})
-        })
-        .then(userUpdated => {
-            return updatedReply; 
-        })
-        .catch(err => {
-            console.log(err); 
-            throw err; 
-        })
+        }
+        else {      
+            let filter = {_id: args.id}; 
+            let updatedReply; 
+            let userPoints; 
+            let userId; 
+            let pointsAdded; 
+            //update reply 
+            //first have to get old points 
+            return db.Reply.findById(args.id)
+            .then(oldReply => {
+                let newPoints 
+                if(args.replyInput) {
+                    pointsAdded = args.replyInput.points; 
+                }
+                else {
+                    pointsAdded = 1;    
+                }
+                newPoints = oldReply.points + pointsAdded;
+                //new true returns back the newly updated doc instead of the old one 
+                return db.Reply.findOneAndUpdate(filter,{points:newPoints}, {new: true})
+            }).then(reply => {
+                updatedReply = {...reply._doc}; 
+                userPoints = updatedReply.author.points + pointsAdded; 
+                userId = updatedReply.author._id; 
+                
+                //need to update the postsByCategory
+                filter = {
+                    user: updatedReply.author._id,
+                    category: updatedReply.category._id
+                }
+                //first query to get current posts
+                return db.PointsByCategory.findOne(filter)
+                .then(pointsByCategory => {
+                    
+                    //if null, need to create 
+                    if(!pointsByCategory) {
+                        filter.points = pointsAdded; 
+                        return createPointsByCategoryFunction(filter)
+                    }
+                    //otherwise we can update
+                    else {
+                        newPoints = pointsByCategory.points += pointsAdded; 
+                        return db.PointsByCategory.findOneAndUpdate(filter,{points: newPoints}, {new: true})
+                    }
+                })
+            
+            })
+            .then(result => {
+                return db.User.findByIdAndUpdate(userId,{points:userPoints})
+            })
+            .then(userUpdated => {
+                return updatedReply; 
+            })
+            .catch(err => {
+                console.log(err); 
+                throw err; 
+            })
+        }
     }, 
     //DELETES A REPLY AND RETURNS THE UPDATED POST IT BELONGS TO - WORKING 
     deleteReply: args => {
