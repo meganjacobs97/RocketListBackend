@@ -19,6 +19,11 @@ const ReplySchema = new Schema({
         ref: "User",
         autopopulate: true
     },
+    category: {
+        type: Schema.Types.ObjectId, 
+        ref: "Category",
+        autopopulate: true
+    },
     points: Number
 });
 

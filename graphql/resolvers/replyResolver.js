@@ -9,6 +9,7 @@ const replyResolver = {
             body: args.replyInput.body, 
             post: args.replyInput.postId, 
             author: args.replyInput.authorId,
+            category: args.replyInput.categoryId,
             points: 0
         })
         //to store the post that we are creating so that we can return it at the end 
@@ -70,7 +71,7 @@ const replyResolver = {
     }, 
     //UPDATES A REPLY AND RETURNS THE POST THE UPDATED REPLY - WORKING 
     updateReply: args => {
-        const filter = {_id: args.id}; 
+        let filter = {_id: args.id}; 
         let updatedReply;
         let replyPoints;  
         //update reply 
@@ -82,12 +83,15 @@ const replyResolver = {
             return db.Reply.findById(args.id); 
         }).then(reply => {
             updatedReply = {...reply._doc}; 
+            console.log(updatedReply); 
+            console.log(updatedReply.author); 
+            console.log(updatedReply.category)
             //if we updated the points
             if(args.replyInput.points) {
                 //need to update the postsByCategory
                 filter = {
-                    user: args.replyInput.authorId,
-                    category: args.replyInput.categoryId
+                    user: updatedReply.author._id,
+                    category: updatedReply.category._id
                 }
                 replyPoints++; 
                 //first query to get current posts
@@ -95,7 +99,8 @@ const replyResolver = {
                 .then(pointsByCategory => {
                     //if null, need to create 
                     if(!pointsByCategory) {
-                        return createPointsByCategoryFunction({userId: args.replyInput.authorId, categoryId:args.replyInput.categoryId, points:replyPoints})
+                        filter.points = replyPoints; 
+                        return createPointsByCategoryFunction(filter)
                     }
                     //otherwise we can update
                     else {
@@ -140,6 +145,7 @@ const replyResolver = {
 }
 
 createPointsByCategoryFunction = (args) => {
+    console.log(args); 
     const newObj = new db.PointsByCategory({
         user: args.userId, 
         category: args.categoryId,

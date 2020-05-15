@@ -332,6 +332,8 @@
 
 12. Give some points to posts 
 
+This process is kind of idiotic right now, so hopefully I will have time to rework it so you only have to do one call. 
+
 NOTE: On the frontend, calls to PointsByCategory updates the "points" field on the user, but not the "points" field on the post. You have to manually call the update to the Post. The queries below show examples of this. 
 
 NOTE 2: You don't have to manually enter the number of points with the call by PointsByCategory; by default, it'll do 1 point. You do have to specify the number of points in the update to the post, however. 
