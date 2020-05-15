@@ -18,13 +18,17 @@ const postResolver = {
         //return here so graphql knows we are doing something async and wont return until done 
         return db.Post
         .find({}).then(posts => {
-            if(!args.postInput.sortRepliesByPoints) {
+            if(!args.postInput || !args.postInput.sortRepliesByPoints) {
                 return posts; 
             }
             else {
                 //sort replies 
                 let returnPosts = {...posts}; 
-                returnPosts.replies = returnPosts.replies.sortRepliesByPoints(); 
+                if(returnPosts.replies)
+                {
+                    returnPosts.replies = sortRepliesByPoints(returnPosts.replies); 
+                }
+
                 return returnPosts; 
             }
             

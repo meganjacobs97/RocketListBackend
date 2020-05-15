@@ -49,6 +49,7 @@ const schema = buildSchema(`
         post: Post!
         author: User!
         points: Int
+        category: Category
     }
     type PointsByCategory {
         _id: ID!
