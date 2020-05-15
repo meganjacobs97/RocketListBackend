@@ -120,7 +120,7 @@ const schema = buildSchema(`
     
 
     type RootQuery {
-        posts: [Post!]!
+        posts(postInput: PostInput): [Post!]!
         users(sortByPosts: Boolean,sortByPoints: Boolean): [User!]!        
         categories: [Category!]!
         category(id: ID!): Category 
