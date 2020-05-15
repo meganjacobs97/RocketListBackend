@@ -45,16 +45,18 @@ const postResolver = {
             //date_created: new Data(args.postInput.date).toISOString(); 
             points: 0,
             subcategory: args.postInput.subcategoryId,
-            author: args.postInput.authorId
+            author: args.postInput.authorId,
+            category: args.postInput.categoryId
         })
         //to store the post that we are creating so that we can return it at the end 
         let createdPost; 
         let numUserPosts; 
+        let filter; 
         //store post to database 
         return db.Post
         .create(newPost).then(result => {
             //result refers to the post that we just created 
-            console.log(result);
+        
             //...result._doc returns result without all the associated metadata 
             //specify result.id otherwise we will get an error (TODO - maybe dont need this?)
             createdPost = {...result._doc, 
@@ -71,6 +73,8 @@ const postResolver = {
             user.posts.push(newPost); 
             //grab current numposts and increment 
             numUserPosts = user.numPosts + 1; 
+            console.log(user.numPosts);
+            console.log(numUserPosts); 
             //update user
             return user.save(); 
 
@@ -78,7 +82,7 @@ const postResolver = {
         .then(userResult => {
             //result now refers to the updated user
             //still need to update numPosts 
-            db.User.findByIdAndUpdate(args.postInput.authorId,{numPosts: numUserPosts})
+            return db.User.findByIdAndUpdate(args.postInput.authorId,{numPosts: numUserPosts},{new:true})
         })
         .then(userUpdateResult => {
             //update the subcategory 
@@ -97,7 +101,26 @@ const postResolver = {
         })
         .then(categoryResult => {
             //result now refers to the updated category 
-            console.log(createdPost);
+            //need to update the postsByCategory
+            filter = {
+                user: args.postInput.authorId,
+                category: args.postInput.categoryId
+            }
+            //first query to get current posts
+            return db.PostsByCategory.findOne(filter)
+        })
+        .then(postsByCategory => {
+            //if null, need to create 
+            if(!postsByCategory) {
+               return createPostsByCategoryFunction({userId: args.postInput.authorId, categoryId:args.postInput.categoryId, posts:1})
+            }
+            //otherwise we can update
+            else {
+                return db.PostsByCategory.findOneAndUpdate(filter,{posts: numUserPosts}, {new: true})
+            }
+        })
+        .then(updatedPostByCategory => {
+            
             //instead we have to return the createdpost
             return createdPost; 
         })
@@ -122,6 +145,40 @@ const postResolver = {
         })
         
     }
+}
+
+//for creating a postbycategory document 
+createPostsByCategoryFunction = (args) => {
+    const newObj = new db.PostsByCategory({
+        user: args.userId, 
+        category: args.categoryId,
+        posts: args.posts
+    })
+    let postsByCategoryResult; 
+    //save to database
+    return db.PostsByCategory
+    .create(newObj).then(result => {
+        //return the new user
+        //return a null value for the password 
+        postsByCategoryResult = {...result._doc
+            //_id: result.id
+        }; 
+        return db.User.findById(args.userId)
+    }).then(user => {
+        if(!user) {
+            throw new Error("user id does not exist")
+        }
+        //add to user's array 
+        user.postsByCategory.push(postsByCategoryResult)
+        //update ust 
+        return user.save()
+    }).then(userResult => {
+        return postsByCategoryResult; 
+    })
+    .catch(err => {
+        console.log(err); 
+        throw err; 
+    })
 }
 
 

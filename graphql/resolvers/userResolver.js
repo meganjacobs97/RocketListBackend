@@ -61,7 +61,8 @@ const userResolver = {
                 //encrypt password
                 password: bcrypt.hashSync(args.userInput.password,bcrypt.genSaltSync(12),null),
                 email: args.userInput.email,
-                points: 0
+                points: 0,
+                numPosts: 0
             })
             return db.User
             //save to database

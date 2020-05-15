@@ -20,23 +20,6 @@ const pointsByCategoryResolver = {
             throw err; 
         })
     },
-    //takes in a userId and returns the total number of points for that user across all categories (as an integer)- WORKING
-    //WILL NOT NEED THIS IF WE KEEP THE POINTS FIELD IN THE USER AND UPDATE IT SEPARATELY - TODO
-    allPointsByUser: args => {
-        return db.PointsByCategory.find({
-            user: args.userId
-        }).then(pointsObjs => {
-            let sumPoints = 0; 
-            for(let i = 0; i < pointsObjs.length; i++) {
-                sumPoints += pointsObjs[i].points; 
-            }
-            return sumPoints; 
-        }).catch(err => {
-            console.log(err); 
-            throw err; 
-        })
-
-    },
     //takes in a category id and return an array of pointsbycategory objects sorted in descending order by points - WORKING
     //THIS IS HOW YOU SORT TOP USERS (POINTS-WISE) BY CATEGORY
     pointsByCategory: args => {
@@ -60,15 +43,19 @@ const pointsByCategoryResolver = {
         }
         let userPoints; 
         let pointsByCategoryResult; 
+        let point = args.pointsByCategoryInput.points; 
+        if(!point) {
+            point = 1; 
+        }
         //first query to get current points 
         return db.PointsByCategory.findOne(filter)
         .then(pointsByCategory => {
             //if null, need to create 
             if(!pointsByCategory) {
-               return createPointsByCategoryFunc({userId: args.userId, categoryId:args.categoryId})
+               return createPointsByCategoryFunc({userId: args.userId, categoryId:args.categoryId, points:point})
                .then(returnval => {
                 console.log(returnval); 
-                userPoints = returnval.user.points + args.pointsByCategoryInput.points
+                userPoints = returnval.user.points + point
                 return db.PointsByCategory.findOneAndUpdate(filter,{points: userPoints}, {new: true})
                 })
                 .then(updatedPointsByCategory => {
@@ -85,7 +72,7 @@ const pointsByCategoryResolver = {
                
             }
             else {
-                userPoints = pointsByCategory._doc.points + args.pointsByCategoryInput.points; 
+                userPoints = pointsByCategory._doc.points + point; 
             }
             
             //then update 
@@ -123,10 +110,14 @@ sortArray = (unsortedArray) => {
 
 //separated into a function in case we need to call separately
 createPointsByCategoryFunc = (args) => {
+    let point = args.points; 
+    if(!point) {
+        point = 1; 
+    }
     const newObj = new db.PointsByCategory({
         user: args.userId, 
         category: args.categoryId,
-        points: 1
+        points: point
     })
     let pointsByCategoryResult; 
     //save to database
@@ -144,7 +135,7 @@ createPointsByCategoryFunc = (args) => {
         }
         //add to user's array 
         user.pointsByCategory.push(pointsByCategoryResult)
-        //update ust 
+        //update user
         return user.save()
     }).then(userResult => {
         return pointsByCategoryResult; 

@@ -18,7 +18,8 @@ const ReplySchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: "User",
         autopopulate: true
-    }
+    },
+    points: Number
 });
 
 ReplySchema.plugin(autopopulate); 

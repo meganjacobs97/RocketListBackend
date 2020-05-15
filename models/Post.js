@@ -15,6 +15,11 @@ const PostSchema = new Schema({
         required: true 
     }, 
     points: Number,
+    category: {
+        type: Schema.Types.ObjectId,
+        ref: "Category", 
+        autopopulate: true
+    },
     subcategory: { 
         type: Schema.Types.ObjectId,
         ref: "Subcategory",
