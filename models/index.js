@@ -6,5 +6,6 @@ module.exports = {
   Reply: require("./Reply"), 
   Post: require("./Post"), 
   User: require("./User"),
-  PointsByCategory: require("./PointsByCategory")
+  PointsByCategory: require("./PointsByCategory"),
+  PostsByCategory: require("./PostsByCategory")
 };

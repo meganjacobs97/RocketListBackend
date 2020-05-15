@@ -11,8 +11,9 @@ const schema = buildSchema(`
         _id: ID!
         username: String!
         password: String
-        email: String!
+        email: String
         points: Int
+        numPosts: Int
         posts: [Post]
         replies: [Reply]
     }
@@ -37,6 +38,7 @@ const schema = buildSchema(`
         is_locked: Boolean!
         points: Int
         subcategory: Subcategory!
+        category: Category! 
         author: User!
         replies: [Reply!]
     }
@@ -52,6 +54,12 @@ const schema = buildSchema(`
         category: Category! 
         user: User!
         points: Int 
+    }
+    type PostsByCategory {
+        _id: ID! 
+        category: Category! 
+        user: User! 
+        posts: Int
     }
     type AuthData {
         userId: ID!
@@ -69,6 +77,7 @@ const schema = buildSchema(`
         is_locked: Boolean
         points: Int
         subcategoryId: String
+        categoryId: String 
         authorId: String
     }
     input UserInput {
@@ -97,6 +106,11 @@ const schema = buildSchema(`
         categoryId: String 
         userId: String 
     }
+    input PostsByCategoryInput {
+        points: Int
+        categoryId: String 
+        userId: String
+    }
 
     
 
@@ -111,6 +125,8 @@ const schema = buildSchema(`
         user(id: ID!): User
         pointsByCategoryByUser(userId: ID!, categoryId: ID!): PointsByCategory
         pointsByCategory(categoryId: ID!): [PointsByCategory]
+        postsByCategoryByUser(userId: ID!,categoryId: ID!): PostsByCategory
+        postsByCategory(categoryId: ID!): [PostsByCategory]
     }
     
     type RootMutation {
@@ -127,7 +143,8 @@ const schema = buildSchema(`
         updateSubcategory(id: ID!, subcategoryInput: SubcategoryInput): Subcategory
         updatePointsByCategory(userId: ID!,categoryId: ID!,pointsByCategoryInput: PointsByCategoryInput): PointsByCategory 
         createPointsByCategory(pointsByCategoryInput: PointsByCategoryInput): PointsByCategory
-        
+        updatePostsByCategory(userId: ID!, categoryId: ID!,postsByCategoryInput: PostsByCategoryInput): PostsByCategory
+        createPostsByCategory(postsByCategoryInput: PostsByCategoryInput): PostsByCategory
     }
 
     schema {

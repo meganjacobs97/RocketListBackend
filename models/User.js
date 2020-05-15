@@ -25,7 +25,14 @@ const UserSchema = new Schema({
     {
       type: Schema.Types.ObjectId,
       ref: "PointsByCategory",
-      autopopulate: true
+      autopopulate: false
+    }
+  ],
+  postsByCategory: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "PostsByCategory",
+      autopopulate: false
     }
   ],
   posts: [
