@@ -150,4 +150,38 @@ createPostsByCategoryFunc = (args) => {
     })
 }
 
+createPointsByCategoryFunction = (args) => {
+    const newObj = new db.PointsByCategory({
+        user: args.user, 
+        category: args.category,
+        points: args.points
+    })
+    let pointsByCategoryResult; 
+    //save to database
+    return db.PointsByCategory
+    .create(newObj).then(result => {
+        pointsByCategoryResult = {...result._doc
+            //_id: result.id
+        }; 
+        console.log(args.user); 
+        return db.User.findById(args.user)
+    }).then(user => {
+        console.log(user); 
+        if(!user) {
+            throw new Error("user id does not exist")
+        }
+        //add to user's array 
+        user.pointsByCategory.push(pointsByCategoryResult)
+        //update user
+        return user.save()
+    }).then(userResult => {
+        return pointsByCategoryResult; 
+    })
+    .catch(err => {
+        console.log(err); 
+        throw err; 
+    })
+
+}
+
 module.exports = postsByCategoryResolver; 

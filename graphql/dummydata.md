@@ -330,37 +330,9 @@
     }
 }`
 
-12. Give some points to posts 
-
-This process is kind of idiotic right now, so hopefully I will have time to rework it so you only have to do one call. 
-
-NOTE: On the frontend, calls to PointsByCategory updates the "points" field on the user, but not the "points" field on the post. You have to manually call the update to the Post. The queries below show examples of this. 
-
-NOTE 2: You don't have to manually enter the number of points with the call by PointsByCategory; by default, it'll do 1 point. You do have to specify the number of points in the update to the post, however. 
-
-NOTE 2.5: Make sure figure out how many points a post has BEFORE sending the updatePost query. You need to add the existing number of points onto the point you're adding, and then send that number to the updatePost. This will either be done with a post query OR by grabbing the value off the page/through state. 
-
-NOTE 2.75: You do NOT need to worry about doing a call to PointsByCategory to get the points before calling to updatePointsByCategory; you only need to worry about this when it comes to points. 
-
-NOTE 3: You don't have to do a separate query to createPointsByCategory if you don't want to. If you make a call to updatePointsByCategory and a pointsByCategory document hasn't been created for that category/user, one will be created.
+12. Give some points to posts (automatically updates user's points as well)
 
 a) Paired Queries: 
-
-`mutation {
-    updatePointsByCategory(userId: "[INSERT USER ID]", categoryId: "[CATEGORY ID]",pointsByCategoryInput: {
-        points: 2
-  }) {
-    points
-    user {
-        username
-        _id
-    }
-    category {
-        name
-        _id
-    }
-  }
-}`
 
 `mutation {
     updatePost(id: "[POST ID]",postInput: {
@@ -369,24 +341,6 @@ a) Paired Queries:
         title
   	    points
     }
-}`
-
-b) Paired queries: 
-
-`mutation {
-    updatePointsByCategory(userId: "[INSERT USER ID]", categoryId: "[CATEGORY ID]",pointsByCategoryInput: {
-        points: 10
-  }) {
-    points
-    user {
-        username
-        _id
-    }
-    category {
-        name
-        _id
-    }
-  }
 }`
 
 `mutation {
@@ -415,7 +369,7 @@ query {
   }
 }
 
-14. Give some points to replies 
+14. Give some points to replies (user points are automatically updated as well)
 
 `mutation {
     updateReply(id:"[REPLY ID]", replyInput: {

@@ -135,20 +135,79 @@ const postResolver = {
             throw err; 
         })
     },
-    //UPDATE A POST - WORKING 
+    //UPDATE A POST 
     updatePost: args => {
-        const filter = {_id: args.id}; 
+        if(args.postInput !== null && args.postInput.points === null ) {
+            const filter = {_id: args.id};     
         
-        
-        //update post 
-        //new true returns back the newly updated doc instead of the old one 
-        return db.Post.findOneAndUpdate(filter,args.postInput, {new: true})
-        .then(updatedPost=>{
-            return {...updatedPost._doc,password: null}; 
-        }).catch(err => {
-            console.log(err); 
-            throw err; 
-        })
+            //update post
+            //new true returns back the newly updated doc instead of the old one 
+            return db.Post.findOneAndUpdate(filter,args.postInput, {new: true})
+            .then(updatedPost=>{
+                return {...updatedPost._doc}; 
+            }).catch(err => {
+                console.log(err); 
+                throw err; 
+            })
+        }
+        else {      
+            let filter = {_id: args.id}; 
+            let updatedPost; 
+            let userPoints; 
+            let userId; 
+            let pointsAdded; 
+            //update reply 
+            //first have to get old points 
+            return db.Post.findById(args.id)
+            .then(oldPost => {
+                let newPoints 
+                if(args.postInput) {
+                    pointsAdded = args.postInput.points; 
+                }
+                else {
+                    pointsAdded = 1;    
+                }
+                newPoints = oldPost.points + pointsAdded;
+                //new true returns back the newly updated doc instead of the old one 
+                return db.Post.findOneAndUpdate(filter,{points:newPoints}, {new: true})
+            }).then(post => {
+                updatedPost = {...post._doc}; 
+                userPoints = updatedPost.author.points + pointsAdded; 
+                userId = updatedPost.author._id; 
+                
+                //need to update the pointsByCategory
+                filter = {
+                    user: updatedPost.author._id,
+                    category: updatedPost.category._id
+                }
+                //first query to get current points
+                return db.PointsByCategory.findOne(filter)
+                .then(pointsByCategory => {
+                    
+                    //if null, need to create 
+                    if(!pointsByCategory) {
+                        filter.points = pointsAdded; 
+                        return createPointsByCategoryFunction(filter)
+                    }
+                    //otherwise we can update
+                    else {
+                        newPoints = pointsByCategory.points += pointsAdded; 
+                        return db.PointsByCategory.findOneAndUpdate(filter,{points: newPoints}, {new: true})
+                    }
+                })
+            
+            })
+            .then(result => {
+                return db.User.findByIdAndUpdate(userId,{points:userPoints})
+            })
+            .then(userUpdated => {
+                return updatedPost; 
+            })
+            .catch(err => {
+                console.log(err); 
+                throw err; 
+            })
+        }
         
     }
 }

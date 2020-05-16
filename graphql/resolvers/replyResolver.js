@@ -126,12 +126,12 @@ const replyResolver = {
                 userPoints = updatedReply.author.points + pointsAdded; 
                 userId = updatedReply.author._id; 
                 
-                //need to update the postsByCategory
+                //need to update the pointsByCategory
                 filter = {
                     user: updatedReply.author._id,
                     category: updatedReply.category._id
                 }
-                //first query to get current posts
+                //first query to get current points
                 return db.PointsByCategory.findOne(filter)
                 .then(pointsByCategory => {
                     
@@ -149,6 +149,7 @@ const replyResolver = {
             
             })
             .then(result => {
+                //now update the user 
                 return db.User.findByIdAndUpdate(userId,{points:userPoints})
             })
             .then(userUpdated => {
