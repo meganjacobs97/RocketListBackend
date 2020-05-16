@@ -70,8 +70,6 @@ const schema = buildSchema(`
     }
 
 
-
-
     input PostInput {
         date_created: String
         title: String
@@ -106,17 +104,6 @@ const schema = buildSchema(`
         description: String 
         categoryId: String 
     }
-    input PointsByCategoryInput {
-        points: Int
-        categoryId: String 
-        userId: String 
-    }
-    input PostsByCategoryInput {
-        points: Int
-        categoryId: String 
-        userId: String
-    }
-
     
 
     type RootQuery {
@@ -146,10 +133,6 @@ const schema = buildSchema(`
         deleteReply(id: ID!): Post! 
         createSubcategory(subcategoryInput: SubcategoryInput): Subcategory 
         updateSubcategory(id: ID!, subcategoryInput: SubcategoryInput): Subcategory
-        updatePointsByCategory(userId: ID!,categoryId: ID!,pointsByCategoryInput: PointsByCategoryInput): PointsByCategory 
-        createPointsByCategory(pointsByCategoryInput: PointsByCategoryInput): PointsByCategory
-        updatePostsByCategory(userId: ID!, categoryId: ID!,postsByCategoryInput: PostsByCategoryInput): PostsByCategory
-        createPostsByCategory(postsByCategoryInput: PostsByCategoryInput): PostsByCategory
     }
 
     schema {
