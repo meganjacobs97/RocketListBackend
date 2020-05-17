@@ -125,6 +125,7 @@ const replyResolver = {
                 updatedReply = {...reply._doc}; 
                 userPoints = updatedReply.author.points + pointsAdded; 
                 userId = updatedReply.author._id; 
+                console.log(userId); 
                 
                 //need to update the pointsByCategory
                 filter = {
@@ -220,6 +221,7 @@ createPointsByCategoryFunction = (args) => {
 }
 
 createPostsByCategoryFunction = (args) => {
+    let userId = args.user; 
     const newObj = new db.PostsByCategory({
         user: args.user, 
         category: args.category,
@@ -234,7 +236,7 @@ createPostsByCategoryFunction = (args) => {
         postsByCategoryResult = {...result._doc
             //_id: result.id
         }; 
-        return db.User.findById(args.user)
+        return db.User.findById(userId)
     }).then(user => {
         if(!user) {
             throw new Error("user id does not exist")
