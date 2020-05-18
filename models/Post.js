@@ -9,7 +9,7 @@ const PostSchema = new Schema({
         required: true 
     },
     body: String,
-    date_created: { type: String, default: Date.now.toString() },
+    date_created: { type: String, default: Date.now().toString() },
     is_locked: {
         type: Boolean, 
         required: true 

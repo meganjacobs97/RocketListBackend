@@ -30,11 +30,11 @@ const graphqlResolvers = require("./graphql/resolvers");
 const graphqlSchema = require("./graphql/schema");
 
 const server = new ApolloServer({
-  schema: graphqlSchema,
+  typeDefs: graphqlSchema,
   resolvers: graphqlResolvers,
+  graphiql: true,
   context() {
-      console.log('\n\n\n\n');
-      return { x: 0 };
+      console.log('create context');
   },
   formatError(e) {
       console.error(e);
@@ -44,19 +44,19 @@ const server = new ApolloServer({
 });
 
 //graphql has only one endpoint
-app.use('/api', expressGraphql({
+// app.use('/api', expressGraphql({
     
-    schema: graphqlSchema,
-    rootValue: graphqlResolvers,
-    //gives us a built-in way to test our API by hitting the specified route (/api) on the server
-    //TODO: delete before deployment 
-    graphiql: true
-}))
+//     schema: graphqlSchema,
+//     rootValue: graphqlResolvers,
+//     //gives us a built-in way to test our API by hitting the specified route (/api) on the server
+//     //TODO: delete before deployment 
+//     graphiql: true
+// }))
 
 server.applyMiddleware({ app });
 
 // Start the API server
 app.listen(PORT, function() {
-    console.log(`🚀 ==> API Server now listening on PORT ${PORT}!`);
+    console.log(`🚀 ==> API Server now listening on PORT ${server.graphqlPath}/${PORT}!`);
 });
   

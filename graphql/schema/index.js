@@ -1,12 +1,12 @@
 //allows us to define a schema for our API
-const { buildSchema } = require("graphql"); 
+const { gql } = require("apollo-server-express")
 
 //! means doesnt accept null values 
 //user password is nullable because we don't want to return a password when we get user data 
 //custom definitions should match how they appear in the database - TODO 
 //RootQuery and RootMutation is where our resolvers get pointed to; to be defined in resolvers > index.js
 //TODO: user authentication 
-const schema = buildSchema(`
+const schema = gql`
     type User {
         _id: ID!
         username: String!
@@ -62,11 +62,6 @@ const schema = buildSchema(`
         category: Category! 
         user: User! 
         posts: Int
-    }
-    type AuthData {
-        userId: ID!
-        token: String!
-        tokenExpiration: Int!
     }
 
 
@@ -139,7 +134,7 @@ const schema = buildSchema(`
         query: RootQuery
         mutation: RootMutation
     }`
-)
+
 
 //export api schema 
 module.exports = schema; 

@@ -1,33 +1,35 @@
 const db = require("../../models"); 
 
 const postsByCategoryResolver = {
-    //takes in a userId & categoryId. returns the posts for that category for that user 
-    postsByCategoryByUser: args => {
-        return db.PostsByCategory.findOne({
-            user: args.userId,
-            category: args.categoryId
-        })
-        .then(postsByCategory => {
-            return {...postsByCategory._doc}
-        })
-        .catch(err => {
-            console.log(err); 
-            throw err; 
-        })
-    },
-    //takes in a category id and return an array of postsbycategory objects sorted in descending order by posts 
-    //THIS IS HOW YOU SORT TOP USERS (POSTS-WISE) BY CATEGORY
-    postsByCategory: args => {
-        return db.PostsByCategory.find({
-            category: args.categoryId
-        }).then(postsObjs => {
-            return sortArray(postsObjs); 
-        }).then(sortedArray => {
-            return sortedArray; 
-        }).catch(err => {
-            console.log(err); 
-            throw err; 
-        })
+    RootQuery: {
+        //takes in a userId & categoryId. returns the posts for that category for that user 
+        postsByCategoryByUser: (parent,args) => {
+            return db.PostsByCategory.findOne({
+                user: args.userId,
+                category: args.categoryId
+            })
+            .then(postsByCategory => {
+                return {...postsByCategory._doc}
+            })
+            .catch(err => {
+                console.log(err); 
+                throw err; 
+            })
+        },
+        //takes in a category id and return an array of postsbycategory objects sorted in descending order by posts 
+        //THIS IS HOW YOU SORT TOP USERS (POSTS-WISE) BY CATEGORY
+        postsByCategory: (parent,args) => {
+            return db.PostsByCategory.find({
+                category: args.categoryId
+            }).then(postsObjs => {
+                return sortArray(postsObjs); 
+            }).then(sortedArray => {
+                return sortedArray; 
+            }).catch(err => {
+                console.log(err); 
+                throw err; 
+            })
+        }
     }
 }
 

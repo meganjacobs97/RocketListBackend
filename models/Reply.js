@@ -8,7 +8,7 @@ const ReplySchema = new Schema({
         type: String, 
         required: true
     },
-    date_created: { type: String, default: Date.now.toString() },
+    date_created: { type: String, default: Date.now().toString() },
     post: {
         type: Schema.Types.ObjectId,
         ref: "Post",
