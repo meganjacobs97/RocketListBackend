@@ -92,9 +92,9 @@ const replyResolver = {
         },
         //UPDATES A REPLY AND RETURNS THE POST THE UPDATED REPLY - WORKING 
         updateReply: (parent,args) => {
-            if(!req.isAuth) {
-                throw new Error("unathenticated")
-            }
+            // if(!req.isAuth) {
+            //     throw new Error("unathenticated")
+            // }
             if(args.replyInput !== null && args.replyInput.points === null ) {
                 const filter = {_id: args.id};     
             
@@ -171,9 +171,9 @@ const replyResolver = {
         }, 
         //DELETES A REPLY AND RETURNS THE UPDATED POST IT BELONGS TO - WORKING 
         deleteReply: (parent,args) => {
-            if(!req.isAuth) {
-                throw new Error("unathenticated")
-            }
+            // if(!req.isAuth) {
+            //     throw new Error("unathenticated")
+            // }
             //grab the id of the post so we can pass it back 
             let postId; 
             return db.Reply.findOne({_id:args.id}

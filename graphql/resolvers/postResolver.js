@@ -23,8 +23,18 @@ const postResolver = {
         //GETS ALL POSTS - WORKING 
         posts: (parent, args) => {
             //return here so graphql knows we are doing something async and wont return until done 
-            return db.Post
-            .find({}).then(posts => {
+            console.log(args); 
+            let filter; 
+            if(args.postInput && args.postInput.categoryId){
+                filter = {category: args.postInput.categoryId}
+            }
+            else {
+                filter = {}
+            }
+            console.log(filter); 
+            return db.Post.find(filter)
+            .then(posts => {
+                console.log(posts); 
                 if(!args.postInput || !args.postInput.sortRepliesByPoints) {
                     return posts; 
                 }

@@ -35,9 +35,9 @@ const userResolver = {
         }, 
         //GETS A USER - WORKING 
         user: (parent,args) => {
-            if(!req.isAuth) {
-                throw new Error("unathenticated")
-            }
+            // if(!req.isAuth) {
+            //     throw new Error("unathenticated")
+            // }
             return db.User.findOne({_id:args.id}).then(user=> { 
                 return {...user._doc}; 
             })
@@ -49,9 +49,9 @@ const userResolver = {
         //GETS ALL USERS - WORKING
         //takes in optional booleans to sort all users by points and to sort all users by number of posts and replies 
         users: (parent,args) => {
-            if(!req.isAuth) {
-                throw new Error("unathenticated")
-            }
+            // if(!req.isAuth) {
+            //     throw new Error("unathenticated")
+            // }
             //return here so graphql knows we are doing something async and wont return until done 
             return db.User
             //TODO: specify args in the {} for the data we want back
@@ -116,9 +116,9 @@ const userResolver = {
         },
         //UPDATES A USER - WORKING 
         updateUser: (parent,args) => {  
-            if(!req.isAuth) {
-                throw new Error("unathenticated")
-            }
+            // if(!req.isAuth) {
+            //     throw new Error("unathenticated")
+            // }
             const filter = {_id: args.id}; 
             //update user 
             //new true returns back the newly updated doc instead of the old one 
