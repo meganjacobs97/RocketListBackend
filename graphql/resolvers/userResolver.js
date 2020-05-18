@@ -1,13 +1,43 @@
 //for password encryption 
 const bcrypt = require("bcrypt"); 
+//for user authentication 
+const jwt = require("jsonwebtoken"); 
 
 //import mongoDB models 
 const db = require("../../models"); 
 
 const userResolver = {
     RootQuery: {
+        login: (parent,{username,password}) => {
+            let userRes; 
+            return db.User.findOne({username:username})
+            .then(user => {
+                if(!user) {
+                    throw new Error("Username does not exist"); 
+                }
+                userRes = user; 
+                return bcrypt.compare(password,userRes.password); 
+                
+            })
+            .then(isEqual => {
+                if(!isEqual) {
+                    throw new Error("Password is incorrect"); 
+                }
+                const token = jwt.sign({userId: userRes.id,username:userRes.username},process.env("SESSION_SECRET"),{
+                    expiresIn: '3h'
+                })
+                return ({userId:userRes.id,token:token,tokenExpiration:3})
+            })
+            .catch(err => {
+                console.log(err); 
+                throw err; 
+            })
+        }, 
         //GETS A USER - WORKING 
         user: (parent,args) => {
+            if(!req.isAuth) {
+                throw new Error("unathenticated")
+            }
             return db.User.findOne({_id:args.id}).then(user=> { 
                 return {...user._doc}; 
             })
@@ -19,6 +49,9 @@ const userResolver = {
         //GETS ALL USERS - WORKING
         //takes in optional booleans to sort all users by points and to sort all users by number of posts and replies 
         users: (parent,args) => {
+            if(!req.isAuth) {
+                throw new Error("unathenticated")
+            }
             //return here so graphql knows we are doing something async and wont return until done 
             return db.User
             //TODO: specify args in the {} for the data we want back
@@ -83,6 +116,9 @@ const userResolver = {
         },
         //UPDATES A USER - WORKING 
         updateUser: (parent,args) => {  
+            if(!req.isAuth) {
+                throw new Error("unathenticated")
+            }
             const filter = {_id: args.id}; 
             //update user 
             //new true returns back the newly updated doc instead of the old one 

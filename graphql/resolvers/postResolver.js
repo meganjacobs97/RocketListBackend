@@ -6,7 +6,13 @@ const postResolver = {
         //GETS A POST - WORKING 
         post: (parent, args) => {
             return db.Post.findOne({_id:args.id}).then(post=> {
-                return {...post._doc}; 
+                if(post) {
+                    return {...post._doc}; 
+                }
+                else {
+                    return null; 
+                }
+                
             })
             .catch(err => {
                 console.log(err); 
@@ -44,6 +50,9 @@ const postResolver = {
         //CREATE A POST - WORKING 
         //createPost accepts a list of arguments - argument lists can be added to any query, not just mutations
         createPost: (parent, args) => {
+            // if(!req.isAuth) {
+            //     throw new Error("unathenticated")
+            // }
             //create 
             const newPost = new db.Post({
                 title: args.postInput.title,
@@ -140,6 +149,9 @@ const postResolver = {
         },
         //UPDATE A POST 
         updatePost: (parent, args) => {
+            // if(!req.isAuth) {
+            //     throw new Error("unathenticated")
+            // }
             if(args.postInput !== null && args.postInput.points === null ) {
                 const filter = {_id: args.id};     
             

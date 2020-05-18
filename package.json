@@ -16,6 +16,7 @@
     "mongoose": "^5.3.16",
     "cors": "^2.8.5",
     "apollo-server-express": "2.13.1",
-    "deepmerge": "4.2.2"
+    "deepmerge": "4.2.2",
+    "jsonwebtoken": "8.5.1"
   }
 }

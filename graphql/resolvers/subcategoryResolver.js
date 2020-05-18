@@ -6,7 +6,13 @@ const subcategoryResolver = {
         //GET A CATEGORY 
         subcategory: (parent,args) => {
             return db.Subcategory.findOne({_id:args.id}).then(subcategory=> {
-                return {...subcategory._doc}; 
+                if(subcategory) {
+                    return {...subcategory._doc}; 
+                }
+                else {
+                    return null; 
+                }
+                
             })
             .catch(err => {
                 console.log(err); 
@@ -19,14 +25,20 @@ const subcategoryResolver = {
             return db.Subcategory
             //TODO: specify args in the {} for the data we want back
             .find({}).then(subcategories => {
-                //map so that we're not returning all the metadata
-                //have to convert the id to a string otherwise we will get an error (TODO: maybe we dont need to do this)
-                return subcategories.map(subcategory => {
-                    return {...subcategory._doc, 
-                        //_id: post.id
-                        //date_created: new Data(post._doc.date_created).toISOString(); 
-                    }
-                })
+                if(subcategories) {
+                    //map so that we're not returning all the metadata
+                    //have to convert the id to a string otherwise we will get an error (TODO: maybe we dont need to do this)
+                    return subcategories.map(subcategory => {
+                        return {...subcategory._doc, 
+                            //_id: post.id
+                            //date_created: new Data(post._doc.date_created).toISOString(); 
+                        }
+                    })
+                }
+                else {
+                    return null; 
+                }
+                    
             }).catch(err => {
                 console.log(err); 
                 throw err; 

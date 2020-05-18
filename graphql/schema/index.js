@@ -28,7 +28,7 @@ const schema = gql`
         name: String!
         description: String! 
         category: Category! 
-        post: [Post!]
+        posts: [Post!]
     }
     type Post {
         _id: ID!
@@ -62,6 +62,11 @@ const schema = gql`
         category: Category! 
         user: User! 
         posts: Int
+    }
+    type AuthData {
+        userId: ID!
+        token: String! 
+        tokenExpiration: Int! 
     }
 
 
@@ -102,6 +107,7 @@ const schema = gql`
     
 
     type RootQuery {
+        login(username: String!, password: String!): AuthData!
         posts(postInput: PostInput): [Post!]!
         users(sortByPosts: Boolean,sortByPoints: Boolean): [User!]!        
         categories: [Category!]!

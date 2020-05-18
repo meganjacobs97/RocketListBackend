@@ -6,7 +6,12 @@ const categoryResolver = {
         //GETS A SINGLE CATEGORY - WORKING 
         category: (parent, args) => {
             return db.Category.findOne({_id:args.id}).then(category=> {
-                return {...category._doc}; 
+                if(category) {
+                    return {...category._doc}; 
+                }
+                else {
+                    return null; 
+                }          
             })
             .catch(err => {
                 console.log(err); 
@@ -20,14 +25,20 @@ const categoryResolver = {
             return db.Category
             //TODO: specify args in the {} for the data we want back
             .find({}).then(categories => {
-                //map so that we're not returning all the metadata
-                //have to convert the id to a string otherwise we will get an error (TODO: maybe we dont need to do this)
-                return categories.map(category => {
-                    return {...category._doc, 
-                        //_id: post.id
-                        //date_created: new Data(post._doc.date_created).toISOString(); 
-                    }
-                })
+                if(categories) {
+                    //map so that we're not returning all the metadata
+                    //have to convert the id to a string otherwise we will get an error (TODO: maybe we dont need to do this)
+                        return categories.map(category => {
+                        return {...category._doc, 
+                            //_id: post.id
+                            //date_created: new Data(post._doc.date_created).toISOString(); 
+                        }
+                    })
+                }
+                else {
+                    return null; 
+                }
+                
             }).catch(err => {
                 console.log(err); 
                 throw err; 
@@ -37,7 +48,7 @@ const categoryResolver = {
     RootMutation: {
         //CREATES A CATEGORY - WORKING 
         //this query probably wont be hit outside of development (unless categories are added in the future)
-        createCategory: (parent, args) => {
+        createCategory: (parent, args, req) => {
             //create 
             const newCategory = new db.Category({
                 name: args.categoryInput.name,

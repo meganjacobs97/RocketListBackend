@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors"); 
 const { ApolloServer } = require ('apollo-server-express');
+const isAuth = require("./middleware/is-auth")
 
 const mongoose = require("mongoose");
 
@@ -24,6 +25,7 @@ app.use(cors());
 // Connect to the Mongo DB
 mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/rocketlist");
 
+// app.use(isAuth); 
 
 //import api schema
 const graphqlResolvers = require("./graphql/resolvers");
@@ -33,9 +35,19 @@ const server = new ApolloServer({
   typeDefs: graphqlSchema,
   resolvers: graphqlResolvers,
   graphiql: true,
-  context() {
-      console.log('create context');
-  },
+  // context({req,res}) {
+  //   // req: express.Request,
+  //   // res: express.Response
+  //     // console.log('create context');
+  //     // // Get the user token from the headers.
+  //     // const token = req.headers.authorization || '';
+
+  //     // // try to retrieve a user with the token
+  //     // const user = getUser(token);
+
+  //     // // add the user to the context
+  //     // return { user };
+  // },
   formatError(e) {
       console.error(e);
       console.log(JSON.stringify(e, null, '\t'));
