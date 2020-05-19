@@ -34,7 +34,7 @@ module.exports = (req, res, next) => {
             res.writeHead(202);
           }
   
-          //res.write(space);
+          res.write(space);
   
           // Wait another 15 seconds
           waitAndSend();
