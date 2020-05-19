@@ -36,6 +36,7 @@ const server = new ApolloServer({
   typeDefs: graphqlSchema,
   resolvers: graphqlResolvers,
   graphiql: true,
+  cors: true,
   // context({req,res}) {
   //   // req: express.Request,
   //   // res: express.Response
