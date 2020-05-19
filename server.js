@@ -19,6 +19,9 @@ if (process.env.NODE_ENV === "production") {
   app.use(express.static("client/build"));
 }
 
+const timoutmiddleware = require("./middleware/reqtimeout")
+app.use(timoutmiddleware); 
+
 //allow cross-server requests - TODO: specify deployed sites 
 
 app.use(cors()); 
@@ -69,9 +72,10 @@ const server = new ApolloServer({
 
 server.applyMiddleware({ app });
 
+
+
 // Start the API server
 const expressServer = app.listen(PORT, function() {
     console.log(`🚀 ==> API Server now listening on PORT ${server.graphqlPath}/${PORT}!`);
 });
 
-expressServer.setTimeout(10*60*1000);

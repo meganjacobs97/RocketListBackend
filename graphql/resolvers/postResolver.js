@@ -5,23 +5,28 @@ const postResolver = {
     RootQuery: {
         //GETS A POST - WORKING 
         post: (parent, args) => {
-            return db.Post.findOne({_id:args.id}).then(post=> {
-                if(post) {
-                    return {...post._doc}; 
-                }
-                else {
-                    return null; 
-                }
-                
-            })
-            .catch(err => {
-                console.log(err); 
-                throw err; 
-            })
+            var delayed = new DelayedResponse(req, res);
+ 
+            delayed.json().on('poll', function () {
+                return db.Post.findOne({_id:args.id}).then(post=> {
+                    if(post) {
+                        return {...post._doc}; 
+                    }
+                    else {
+                        return null; 
+                    }
+                    
+                })
+                .catch(err => {
+                    console.log(err); 
+                    throw err; 
+                })
+            }).start(5000);
 
         },
         //GETS ALL POSTS - WORKING 
         posts: (parent, args) => {
+            
             //return here so graphql knows we are doing something async and wont return until done 
             console.log(args); 
             let filter; 
