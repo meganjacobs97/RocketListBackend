@@ -29,7 +29,7 @@ app.use(cors());
 // Connect to the Mongo DB
 mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/rocketlist");
 
-// app.use(isAuth); //
+// app.use(isAuth); ////
 
 //import api schema
 const graphqlResolvers = require("./graphql/resolvers");
