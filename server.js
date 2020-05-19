@@ -21,7 +21,7 @@ if (process.env.NODE_ENV === "production") {
 
 //allow cross-server requests - TODO: specify deployed sites 
 
-app.use( cors()); 
+app.use(cors()); 
 
 // Connect to the Mongo DB
 mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/rocketlist");
@@ -36,7 +36,7 @@ const server = new ApolloServer({
   typeDefs: graphqlSchema,
   resolvers: graphqlResolvers,
   graphiql: true,
-  cors: true,
+  cors: false,
   // context({req,res}) {
   //   // req: express.Request,
   //   // res: express.Response
