@@ -70,7 +70,8 @@ const server = new ApolloServer({
 server.applyMiddleware({ app });
 
 // Start the API server
-app.listen(PORT, function() {
+const expressServer = app.listen(PORT, function() {
     console.log(`🚀 ==> API Server now listening on PORT ${server.graphqlPath}/${PORT}!`);
 });
-  
+
+expressServer.setTimeout(10*60*1000);
