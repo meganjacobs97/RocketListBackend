@@ -21,6 +21,8 @@ const UserSchema = new Schema({
   points: Number,
   //keeps track of total number of posts and replies 
   numPosts: Number,
+  //is mod or not 
+  isMod: Boolean,
   pointsByCategory: [
     {
       type: Schema.Types.ObjectId,

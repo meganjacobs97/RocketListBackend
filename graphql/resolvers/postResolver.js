@@ -31,7 +31,6 @@ const postResolver = {
             else {
                 filter = {}
             }
-            console.log(filter); 
             return db.Post.find(filter)
             .then(posts => {
                 console.log(posts); 

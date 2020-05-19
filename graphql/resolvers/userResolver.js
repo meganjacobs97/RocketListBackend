@@ -52,10 +52,17 @@ const userResolver = {
             // if(!req.isAuth) {
             //     throw new Error("unathenticated")
             // }
+            let filter; 
+            if(args.userInput){
+                filter = {isMod: args.userInput.isMod}
+            }
+            else {
+                filter = {}
+            }
             //return here so graphql knows we are doing something async and wont return until done 
             return db.User
             //TODO: specify args in the {} for the data we want back
-            .find({}).then(users => {
+            .find(filter).then(users => {
                 //map so that we're not returning all the metadata
                 //overwrite password to be null so we're not returning it 
                 return users.map(user => {
@@ -95,7 +102,8 @@ const userResolver = {
                     password: bcrypt.hashSync(args.userInput.password,bcrypt.genSaltSync(12),null),
                     email: args.userInput.email,
                     points: 0,
-                    numPosts: 0
+                    numPosts: 0,
+                    isMod: args.userInput.isMod || false
                 })
                 return db.User
                 //save to database

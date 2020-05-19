@@ -13,6 +13,7 @@ const schema = gql`
         password: String
         email: String
         points: Int
+        isMod: Boolean
         numPosts: Int
         posts: [Post]
         replies: [Reply]
@@ -36,7 +37,7 @@ const schema = gql`
         title: String!
         body: String
         is_locked: Boolean!
-        points: Int
+        points: Int       
         subcategory: Subcategory!
         category: Category! 
         author: User!
@@ -86,6 +87,7 @@ const schema = gql`
         password: String
         email: String
         points: Int
+        isMod: Boolean
     }
     input ReplyInput {
         date_created: String
@@ -109,7 +111,7 @@ const schema = gql`
     type RootQuery {
         login(username: String!, password: String!): AuthData!
         posts(postInput: PostInput): [Post!]!
-        users(sortByPosts: Boolean,sortByPoints: Boolean): [User!]!        
+        users(sortByPosts: Boolean,sortByPoints: Boolean,userInput: UserInput): [User!]!        
         categories: [Category!]!
         category(id: ID!): Category 
         subcategory(id: ID!): Subcategory
