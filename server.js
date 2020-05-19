@@ -21,9 +21,7 @@ if (process.env.NODE_ENV === "production") {
 
 //allow cross-server requests - TODO: specify deployed sites 
 
-app.use( cors({
-  origin: ["http://localhost:3000"]
-})); 
+app.use( cors()); 
 
 // Connect to the Mongo DB
 mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/rocketlist");
