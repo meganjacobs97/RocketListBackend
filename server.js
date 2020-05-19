@@ -20,7 +20,24 @@ if (process.env.NODE_ENV === "production") {
 }
 
 //allow cross-server requests - TODO: specify deployed sites 
-app.use(cors()); 
+const allowedOrigins = [
+  'http://localhost:3000'
+];
+app.use( cors({
+  origin: function (origin, callback) {
+    // allow requests with no origin
+    // (like mobile apps or curl requests)
+    console.log('origin: ', origin);
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      var msg =
+        'The CORS policy for this site does not ' +
+        'allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
+})); 
 
 // Connect to the Mongo DB
 mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/rocketlist");

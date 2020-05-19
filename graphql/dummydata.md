@@ -18,6 +18,7 @@
         username: "dion"
         password: "password"
         email: "dion@test.com"
+        isMod: true
     }) {
         _id
         username
@@ -30,6 +31,7 @@
         username: "paul"
         password: "password"
         email: "paul@test.com"
+        isMod: true
     }) {
         _id
         username
@@ -42,6 +44,7 @@
         username: "louis"
         password: "password"
         email: "louis@test.com"
+        isMod: true
     }) {
         _id
         username
