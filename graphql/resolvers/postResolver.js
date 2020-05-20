@@ -5,23 +5,19 @@ const postResolver = {
     RootQuery: {
         //GETS A POST - WORKING 
         post: (parent, args) => {
-            var delayed = new DelayedResponse(req, res);
- 
-            delayed.json().on('poll', function () {
-                return db.Post.findOne({_id:args.id}).then(post=> {
-                    if(post) {
-                        return {...post._doc}; 
-                    }
-                    else {
-                        return null; 
-                    }
-                    
-                })
-                .catch(err => {
-                    console.log(err); 
-                    throw err; 
-                })
-            }).start(5000);
+            return db.Post.findOne({_id:args.id}).then(post=> {
+                if(post) {
+                    return {...post._doc}; 
+                }
+                else {
+                    return null; 
+                }
+                
+            })
+            .catch(err => {
+                console.log(err); 
+                throw err; 
+            })
 
         },
         //GETS ALL POSTS - WORKING 
