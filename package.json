@@ -12,6 +12,7 @@
     "bcrypt": "4.0.1",
     "cors": "^2.8.5",
     "deepmerge": "4.2.2",
+    "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-graphql": "0.9.0",
     "graphql": "15.0.0",
@@ -19,6 +20,7 @@
     "jsonwebtoken": "8.5.1",
     "mongodb": "^3.5.7",
     "mongoose": "^5.3.16",
-    "mongoose-autopopulate": "0.12.2"
+    "mongoose-autopopulate": "0.12.2",
+    "url": "^0.11.0"
   }
 }

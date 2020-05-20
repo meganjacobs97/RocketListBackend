@@ -2,6 +2,8 @@ const express = require("express");
 const cors = require("cors"); 
 const { ApolloServer } = require ('apollo-server-express');
 const isAuth = require("./middleware/is-auth")
+const url = require("url"); 
+require("dotenv").config(); 
 
 const mongoose = require("mongoose");
 
@@ -27,7 +29,8 @@ app.use(timoutmiddleware);
 app.use(cors()); 
 
 // Connect to the Mongo DB
-mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/rocketlist");
+mongoose.connect(process.env.MONGODB_URI)
+.then().catch(err => console.log(err));
 
 // app.use(isAuth); ////
 
