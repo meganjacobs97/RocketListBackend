@@ -21,8 +21,6 @@ if (process.env.NODE_ENV === "production") {
   app.use(express.static("client/build"));
 }
 
-const timoutmiddleware = require("./middleware/reqtimeout")
-app.use(timoutmiddleware); 
 
 //allow cross-server requests - TODO: specify deployed sites 
 
