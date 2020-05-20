@@ -1,5 +1,5 @@
 const express = require("express");
-const cors = require("cors"); 
+//const cors = require("cors"); 
 const { ApolloServer } = require ('apollo-server-express');
 const isAuth = require("./middleware/is-auth")
 const path = require('path');
@@ -16,7 +16,7 @@ app.use("/",router);
 const mongoose = require("mongoose");
 
 //allows us to connect the API schema and resolvers 
-const expressGraphql = require("express-graphql"); 
+//const expressGraphql = require("express-graphql"); 
 
 
 const PORT = process.env.PORT || 3001;
@@ -32,7 +32,7 @@ if (process.env.NODE_ENV === "production") {
 
 //allow cross-server requests - TODO: specify deployed sites 
 
-app.use(cors()); 
+//app.use(cors()); 
 
 // Connect to the Mongo DB
 mongoose.connect(process.env.MONGODB_URI)
@@ -48,7 +48,7 @@ const server = new ApolloServer({
   typeDefs: graphqlSchema,
   resolvers: graphqlResolvers,
   graphiql: true,
-  cors: false,
+  cors: true,
   // context({req,res}) {
   //   // req: express.Request,
   //   // res: express.Response
