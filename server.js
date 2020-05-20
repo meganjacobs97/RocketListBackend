@@ -2,16 +2,16 @@ const express = require("express");
 //const cors = require("cors"); 
 const { ApolloServer } = require ('apollo-server-express');
 const isAuth = require("./middleware/is-auth")
-const path = require('path');
+// const path = require('path');
 require("dotenv").config(); 
 
 const app = express();
 
-const router = express.Router();
-router.get("/",(req,res)=> {
-  res.sendFile(path.join(__dirname+'/main.html'));  
-})
-app.use("/",router); 
+// const router = express.Router();
+// router.get("/",(req,res)=> {
+//   res.sendFile(path.join(__dirname+'/main.html'));  
+// })
+// app.use("/",router); 
 
 const mongoose = require("mongoose");
 
