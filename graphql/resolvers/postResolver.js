@@ -100,18 +100,18 @@ const postResolver = {
                 //add created post to the user 
                 user.posts.push(newPost); 
                 //grab current numposts and increment 
-                numUserPosts = user.numPosts + 1; 
-                console.log(user.numPosts);
-                console.log(numUserPosts); 
+                // numUserPosts = user.numPosts + 1; 
+                // console.log(user.numPosts);
+                // console.log(numUserPosts); 
                 //update user
                 return user.save(); 
 
             })
-            .then(userResult => {
-                //result now refers to the updated user
-                //still need to update numPosts 
-                return db.User.findByIdAndUpdate(args.postInput.authorId,{numPosts: numUserPosts},{new:true})
-            })
+            // .then(userResult => {
+            //     //result now refers to the updated user
+            //     //still need to update numPosts 
+            //     return db.User.findByIdAndUpdate(args.postInput.authorId,{numPosts: numUserPosts},{new:true})
+            // })
             .then(userUpdateResult => {
                 //update the subcategory 
                 return db.Subcategory.findById(args.postInput.subcategoryId)
@@ -178,8 +178,8 @@ const postResolver = {
             else {      
                 let filter = {_id: args.id}; 
                 let updatedPost; 
-                let userPoints; 
-                let userId; 
+                //let userPoints; 
+                //let userId; 
                 let pointsAdded; 
                 //update reply 
                 //first have to get old points 
@@ -197,8 +197,8 @@ const postResolver = {
                     return db.Post.findOneAndUpdate(filter,{points:newPoints}, {new: true})
                 }).then(post => {
                     updatedPost = {...post._doc}; 
-                    userPoints = updatedPost.author.points + pointsAdded; 
-                    userId = updatedPost.author._id; 
+                    //userPoints = updatedPost.author.points + pointsAdded; 
+                    //userId = updatedPost.author._id; 
                     
                     //need to update the pointsByCategory
                     filter = {
@@ -222,10 +222,10 @@ const postResolver = {
                     })
                 
                 })
+                // .then(result => {
+                //     return db.User.findByIdAndUpdate(userId,{points:userPoints})
+                // })
                 .then(result => {
-                    return db.User.findByIdAndUpdate(userId,{points:userPoints})
-                })
-                .then(userUpdated => {
                     return updatedPost; 
                 })
                 .catch(err => {

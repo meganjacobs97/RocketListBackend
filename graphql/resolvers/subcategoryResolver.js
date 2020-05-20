@@ -1,7 +1,18 @@
 //import mongoDB models 
 const db = require("../../models"); 
+const mongoose = require("mongoose"); 
 
 const subcategoryResolver = {
+    Subcategory: {
+        async posts(parent, args, context) {
+            const posts = await db.Post.find({subcategory: parent._id})
+            return posts; 
+        },
+        async category(parent, args, context) {
+            const category = await db.Category.findOne({id: mongoose.ObjectId(parent.category)})
+            return category; 
+        }
+    }, 
     RootQuery: {
         //GET A CATEGORY 
         subcategory: (parent,args) => {

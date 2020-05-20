@@ -1,7 +1,23 @@
 //import mongoDB models 
 const db = require("../../models"); 
+const mongoose = require("mongoose")
 
 const replyResolver = {
+    Reply: {
+        async post(parent,args,context) {
+            const post = await db.Post.findOne({id:mongoose.ObjectId(parent.post)}); 
+            return post; 
+        }, 
+        async author(parent, args, context) {
+            const user = await db.User.findOne({id: mongoose.ObjectId(parent.author)})
+            console.log(user)
+            return user; 
+        },
+        async category(parent, args, context) {
+            const category = await db.Category.findOne({id: mongoose.ObjectId(parent.category)})
+            return category; 
+        }
+    },
     RootMutation: {
         //CREATE A REPLY AND RETURN REPLY - WORKING 
         createReply: (parent,args) => {
@@ -18,7 +34,7 @@ const replyResolver = {
             })
             //to store the post that we are creating so that we can return it at the end 
             let createdReply; 
-            let userNumPosts; 
+            // let userNumPosts; 
             let userId = args.replyInput.authorId; 
             let categoryId = args.replyInput.categoryId; 
             //store reply to database 
@@ -40,18 +56,18 @@ const replyResolver = {
                 //add created post to the user 
                 user.replies.push(newReply); 
                 //grab current number of posts and increment
-                userNumPosts = user.numPosts + 1; 
-                console.log(user.numPosts); 
-                console.log(userNumPosts)
+                // userNumPosts = user.numPosts + 1; 
+                // console.log(user.numPosts); 
+                // console.log(userNumPosts)
                 //update user 
                 return user.save(); 
 
             })
             //result now refers to the updated user
-            .then(userResult => {
-                //still have to update numPosts 
-                return db.User.findByIdAndUpdate(args.replyInput.authorId,{numPosts: userNumPosts},{new:true})
-            })
+            // .then(userResult => {
+            //     //still have to update numPosts 
+            //     return db.User.findByIdAndUpdate(args.replyInput.authorId,{numPosts: userNumPosts},{new:true})
+            // })
             .then(updatedUser => {
                 //update posts by category 
                 return db.PostsByCategory.findOne({user:userId,category:categoryId})
@@ -111,8 +127,8 @@ const replyResolver = {
             else {      
                 let filter = {_id: args.id}; 
                 let updatedReply; 
-                let userPoints; 
-                let userId; 
+                // let userPoints; 
+                // let userId; 
                 let pointsAdded; 
                 //update reply 
                 //first have to get old points 
@@ -130,9 +146,9 @@ const replyResolver = {
                     return db.Reply.findOneAndUpdate(filter,{points:newPoints}, {new: true})
                 }).then(reply => {
                     updatedReply = {...reply._doc}; 
-                    userPoints = updatedReply.author.points + pointsAdded; 
-                    userId = updatedReply.author._id; 
-                    console.log(userId); 
+                    // userPoints = updatedReply.author.points + pointsAdded; 
+                    // userId = updatedReply.author._id; 
+                    // console.log(userId); 
                     
                     //need to update the pointsByCategory
                     filter = {
@@ -156,10 +172,10 @@ const replyResolver = {
                     })
                 
                 })
-                .then(result => {
-                    //now update the user 
-                    return db.User.findByIdAndUpdate(userId,{points:userPoints})
-                })
+                // .then(result => {
+                //     //now update the user 
+                //     return db.User.findByIdAndUpdate(userId,{points:userPoints})
+                // })
                 .then(userUpdated => {
                     return updatedReply; 
                 })

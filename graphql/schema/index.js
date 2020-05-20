@@ -17,6 +17,8 @@ const schema = gql`
         numPosts: Int
         posts: [Post]
         replies: [Reply]
+        pointsByCategory: [PointsByCategory]
+        postsByCategory: [PostsByCategory]
     }
     type Category {
         _id: ID!

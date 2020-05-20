@@ -1,7 +1,20 @@
 const db = require("../../models"); 
+const mongoose = require("mongoose"); 
 
 
 const pointsByCategoryResolver = {
+    PointsByCategory: {
+        async category(parent, args, context) { 
+            const category = await db.Category.findOne({ id: mongoose.ObjectId(parent.category) });
+
+            return category;
+        },
+        async user(parent, args, context) {
+            const user = await db.User.findOne({id: mongoose.ObjectId(parent.user)})
+
+            return user; 
+        }
+    },
     RootQuery: {
         //takes in a userId & categoryId. returns the points for that category for that user - WORKING 
         pointsByCategoryByUser: (parent,args) => {

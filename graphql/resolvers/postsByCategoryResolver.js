@@ -1,6 +1,21 @@
 const db = require("../../models"); 
+const mongoose = require("mongoose")
 
 const postsByCategoryResolver = {
+    PostsByCategory: {
+        async category(parent, args, context) {
+            console.log(parent)
+            console.log(parent.category)
+            const category = await db.Category.findOne({ id: mongoose.ObjectId(parent.category) });
+            console.log(category)
+            return category;
+        },
+        async user(parent, args, context) {
+            const user = await db.User.findOne({id: mongoose.ObjectId(parent.user)})
+            console.log(user)
+            return user; 
+        }
+    },
     RootQuery: {
         //takes in a userId & categoryId. returns the posts for that category for that user 
         postsByCategoryByUser: (parent,args) => {

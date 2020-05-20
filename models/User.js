@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
 
-const autopopulate = require("mongoose-autopopulate"); 
+// const autopopulate = require("mongoose-autopopulate"); 
 
 const UserSchema = new Schema({
   username: {
@@ -18,42 +18,42 @@ const UserSchema = new Schema({
     type: String,
     required: true
   },
-  points: Number,
+  //points: Number,
   //keeps track of total number of posts and replies 
-  numPosts: Number,
+  //numPosts: Number,
   //is mod or not 
   isMod: Boolean,
   pointsByCategory: [
     {
       type: Schema.Types.ObjectId,
       ref: "PointsByCategory",
-      autopopulate: false
+      // autopopulate: false
     }
   ],
   postsByCategory: [
     {
       type: Schema.Types.ObjectId,
       ref: "PostsByCategory",
-      autopopulate: false
+      // autopopulate: false
     }
   ],
   posts: [
     {
       type: Schema.Types.ObjectId,
       ref: "Post",
-      autopopulate: true
+      // autopopulate: true
     }
   ],
   replies: [
     {
       type: Schema.Types.ObjectId,
       ref: "Reply",
-      autopopulate: true
+      // autopopulate: true
     }
   ]
 });
 
-UserSchema.plugin(autopopulate); 
+// UserSchema.plugin(autopopulate); 
 
 const User = mongoose.model("User", UserSchema);
 

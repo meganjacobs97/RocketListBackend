@@ -7,6 +7,51 @@ const jwt = require("jsonwebtoken");
 const db = require("../../models"); 
 
 const userResolver = {
+    User: {
+        async posts(parent, args, context) {
+            const userPosts = await db.Post.find({ author: parent._id });
+
+            console.log('userPosts', userPosts);
+
+            return userPosts;
+        },
+        async points(parent, args, context) {
+            const userPoints = (
+                await db.PointsByCategory.find({ user: parent._id })
+            ).reduce(
+                (accumulator, categoryPoints) =>
+                    accumulator + categoryPoints.points,
+                0
+            );
+    
+            return userPoints;
+        },
+        async numPosts(parent,args,context) {
+            const userPosts = (
+                await db.PostsByCategory.find({user: parent._id})
+            ).reduce(
+                (accumulator, categoryPosts) => 
+                    accumulator + categoryPosts.posts, 
+                    0
+            )
+            return userPosts;
+        },
+        async pointsByCategory(parent,args,context) {
+            const pointsByCategory = await db.PointsByCategory.find({user: parent._id})
+
+            return pointsByCategory
+        },
+        async postsByCategory(parent,args,context) {
+            const postsByCategory = await db.PostsByCategory.find({user: parent._id})
+
+            return postsByCategory; 
+        },
+        async replies(parent,args,context) {
+            const userReplies = await db.Post.find({ author: parent._id });
+
+            return userReplies;
+        }
+    },
     RootQuery: {
         login: (parent,{username,password}) => {
             let userRes; 

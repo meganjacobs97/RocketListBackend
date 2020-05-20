@@ -2,6 +2,13 @@
 const db = require("../../models"); 
 
 const categoryResolver = {
+    Category: {
+       async subcategories(parent, args, context) {
+           const subcategoriesByCategory = await db.Subcategory.find({category: parent._id}); 
+           
+           return subcategoriesByCategory; 
+       }
+    },
     RootQuery: {
         //GETS A SINGLE CATEGORY - WORKING 
         category: (parent, args) => {
