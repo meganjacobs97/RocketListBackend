@@ -2,15 +2,23 @@ const express = require("express");
 const cors = require("cors"); 
 const { ApolloServer } = require ('apollo-server-express');
 const isAuth = require("./middleware/is-auth")
-const url = require("url"); 
+const path = require('path');
 require("dotenv").config(); 
+
+const app = express();
+
+const router = express.Router();
+router.get("/",(req,res)=> {
+  res.sendFile(path.join(__dirname+'/main.html'));  
+})
+app.use("/",router); 
 
 const mongoose = require("mongoose");
 
 //allows us to connect the API schema and resolvers 
 const expressGraphql = require("express-graphql"); 
 
-const app = express();
+
 const PORT = process.env.PORT || 3001;
 
 // Define middleware here
@@ -72,7 +80,6 @@ const server = new ApolloServer({
 // }))
 
 server.applyMiddleware({ app });
-
 
 
 // Start the API server
