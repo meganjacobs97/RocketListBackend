@@ -66,4 +66,8 @@ Special Thanks:
 * [react-scroll-to-bottom](https://www.npmjs.com/package/react-scroll-to-bottom)
 * [react-spinners](https://www.npmjs.com/package/react-spinners)
 * [socket.io-client](https://www.npmjs.com/package/socket.io-client)
+<<<<<<< HEAD
 * [tailwindcss](https://www.npmjs.com/package/tailwindcss)
+=======
+* [tailwindcss](https://www.npmjs.com/package/tailwindcss)
+>>>>>>> b5c5703650367c583980a0da5901d20401882ebe
