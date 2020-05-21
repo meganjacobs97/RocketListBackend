@@ -11,11 +11,9 @@ const replyResolver = {
         }, 
         //populate author 
         async author(parent, args, context) {
-            console.log("\n\n\n\n\n" + parent); 
-            const user = await db.User.findOne({id: mongoose.ObjectId(parent.author)})
-            console.log("parent.author",parent.author)
-            console.log("user",user)
-            return user; 
+            const retUser = await db.User.findOne({_id: parent.author})
+  
+            return retUser; 
         },
         //populate category
         async category(parent, args, context) {
