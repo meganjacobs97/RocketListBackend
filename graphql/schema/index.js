@@ -66,11 +66,6 @@ const schema = gql`
         user: User! 
         posts: Int
     }
-    type AuthData {
-        userId: ID!
-        token: String! 
-        tokenExpiration: Int! 
-    }
 
 
     input PostInput {
@@ -111,7 +106,6 @@ const schema = gql`
     
 
     type RootQuery {
-        login(username: String!, password: String!): AuthData!
         posts(postInput: PostInput): [Post!]!
         users(sortByPosts: Boolean,sortByPoints: Boolean,userInput: UserInput): [User!]!        
         categories: [Category!]!
@@ -129,6 +123,7 @@ const schema = gql`
     type RootMutation {
         createPost(postInput: PostInput): Post
         createUser(userInput: UserInput): User
+        login(username: String!, password: String!): User
         createCategory(categoryInput: CategoryInput): Category
         createReply(replyInput: ReplyInput): Reply 
         updatePost(id: ID!, postInput: PostInput): Post 

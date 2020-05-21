@@ -5,16 +5,12 @@ const postsByCategoryResolver = {
     PostsByCategory: {
         //populate category
         async category(parent, args, context) {
-            console.log(parent)
-            console.log(parent.category)
             const category = await db.Category.findOne({ id: mongoose.ObjectId(parent.category) });
-            console.log(category)
             return category;
         },
         //populate user 
         async user(parent, args, context) {
             const user = await db.User.findOne({id: mongoose.ObjectId(parent.user)})
-            console.log(user)
             return user; 
         }
     },

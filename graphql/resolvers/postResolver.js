@@ -23,7 +23,7 @@ const postResolver = {
         //GETS ALL POSTS -
         posts: (parent, args) => {
             //return here so graphql knows we are doing something async and wont return until done 
-            console.log(args); 
+            
             let filter; 
             if(args.postInput && args.postInput.categoryId){
                 filter = {category: args.postInput.categoryId}
@@ -33,7 +33,7 @@ const postResolver = {
             }
             return db.Post.find(filter)
             .then(posts => {
-                console.log(posts); 
+                 
                 if(!args.postInput || !args.postInput.sortRepliesByPoints) {
                     return posts; 
                 }
@@ -253,10 +253,10 @@ createPointsByCategoryFunc = (args) => {
     return db.PointsByCategory
     .create(newObj).then(result => {
         pointsByCategoryResult = {...result._doc }; 
-        console.log(args.user); 
+        ; 
         return db.User.findById(args.user)
     }).then(user => {
-        console.log(user); 
+         
         if(!user) {
             throw new Error("user id does not exist")
         }

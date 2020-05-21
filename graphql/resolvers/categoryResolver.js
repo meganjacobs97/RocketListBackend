@@ -59,7 +59,6 @@ const categoryResolver = {
             //store category to database 
             return db.Category.create(newCategory).then(result => {
                 //result refers to the post that we just created 
-                console.log(result);
 
                 return {...result._doc };  
             })

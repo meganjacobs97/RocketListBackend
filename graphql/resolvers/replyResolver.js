@@ -12,7 +12,6 @@ const replyResolver = {
         //populate author 
         async author(parent, args, context) {
             const user = await db.User.findOne({id: mongoose.ObjectId(parent.author)})
-            console.log(user)
             return user; 
         },
         //populate category
@@ -68,7 +67,6 @@ const replyResolver = {
                     return createPostsByCategoryFunction({user:userId,category:categoryId})
                 }
                 else {
-                    console.log(postsByCategory.posts);
                     let newPosts = postsByCategory.posts + 1; 
                     return db.PostsByCategory.findOneAndUpdate({user:userId,category:categoryId},{posts:newPosts})
                 }

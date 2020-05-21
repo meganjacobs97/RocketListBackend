@@ -58,30 +58,6 @@ const userResolver = {
         }
     },
     RootQuery: {
-        login: (parent,{username,password}) => {
-            console.log("in login")
-            let userRes; 
-            return db.User.findOne({username:username})
-            .then(user => {
-                if(!user) {
-                    throw new Error("Username does not exist"); 
-                }
-                userRes = user; 
-                return bcrypt.compare(password,userRes.password); 
-                
-            })
-            .then(isEqual => {
-                if(!isEqual) {
-                    throw new Error("Password is incorrect"); 
-                }
-                console.log("user logged in")
-                return ({userId:userRes.id})
-            })
-            .catch(err => {
-                console.log(err); 
-                throw err; 
-            })
-        }, 
         //GETS A USER 
         user: (parent,args) => {
             // if(!req.isAuth) {
@@ -135,9 +111,32 @@ const userResolver = {
         }
     },
     RootMutation: {
+        login: (parent,{username,password}) => {
+            console.log("in login")
+            let userRes; 
+            return db.User.findOne({username:username})
+            .then(user => {
+                if(!user) {
+                    throw new Error("Username does not exist"); 
+                }
+                userRes = user; 
+                return bcrypt.compare(password,userRes.password); 
+                
+            })
+            .then(isEqual => {
+                if(!isEqual) {
+                    throw new Error("Password is incorrect"); 
+                }
+                console.log(userRes)
+                return (userRes)
+            })
+            .catch(err => {
+                console.log(err); 
+                throw err; 
+            })
+        }, 
         //CREATES A USER
         createUser: (parent,args) => {
-            console.log("in create user")
             //see if user with that email address already exists 
             return db.User.findOne({username: args.userInput.username}).then(user => {
                 if(user) {
