@@ -17,7 +17,7 @@ const postsByCategoryResolver = {
     RootQuery: {
         //takes in a user and reutns the posts by category for that user 
         postsByUser: (parent,args) => {
-            return db.PostsByCategory.findOne({userId: args.userId})
+            return db.PostsByCategory.find({user: args.userId})
             .then(postsByCategory => {
                 return postsByCategory; 
             })
