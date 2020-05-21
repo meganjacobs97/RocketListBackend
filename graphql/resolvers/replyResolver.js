@@ -4,22 +4,25 @@ const mongoose = require("mongoose")
 
 const replyResolver = {
     Reply: {
+        //populate post 
         async post(parent,args,context) {
             const post = await db.Post.findOne({id:mongoose.ObjectId(parent.post)}); 
             return post; 
         }, 
+        //populate author 
         async author(parent, args, context) {
             const user = await db.User.findOne({id: mongoose.ObjectId(parent.author)})
             console.log(user)
             return user; 
         },
+        //populate category
         async category(parent, args, context) {
             const category = await db.Category.findOne({id: mongoose.ObjectId(parent.category)})
             return category; 
         }
     },
     RootMutation: {
-        //CREATE A REPLY AND RETURN REPLY - WORKING 
+        //CREATE A REPLY AND RETURN REPLY 
         createReply: (parent,args) => {
             // if(!req.isAuth) {
             //     throw new Error("unathenticated")
@@ -38,14 +41,10 @@ const replyResolver = {
             let userId = args.replyInput.authorId; 
             let categoryId = args.replyInput.categoryId; 
             //store reply to database 
-            return db.Reply
-            .create(newReply).then(result => {
+            return db.Reply.create(newReply)
+            .then(result => {
                 //result refers to the reply that we just created 
-                //...result._doc returns result without all the associated metadata 
-                //specify result.id otherwise we will get an error (TODO - maybe dont need this?)
-                createdReply = {...result._doc, 
-                    //_id: result.id
-                };  
+                createdReply = {...result._doc };  
                 return db.User.findById(args.replyInput.authorId)
             })
             .then(user => {
@@ -55,19 +54,10 @@ const replyResolver = {
                 }
                 //add created post to the user 
                 user.replies.push(newReply); 
-                //grab current number of posts and increment
-                // userNumPosts = user.numPosts + 1; 
-                // console.log(user.numPosts); 
-                // console.log(userNumPosts)
+
                 //update user 
                 return user.save(); 
-
             })
-            //result now refers to the updated user
-            // .then(userResult => {
-            //     //still have to update numPosts 
-            //     return db.User.findByIdAndUpdate(args.replyInput.authorId,{numPosts: userNumPosts},{new:true})
-            // })
             .then(updatedUser => {
                 //update posts by category 
                 return db.PostsByCategory.findOne({user:userId,category:categoryId})
@@ -106,7 +96,7 @@ const replyResolver = {
                 throw err; 
             })
         },
-        //UPDATES A REPLY AND RETURNS THE POST THE UPDATED REPLY - WORKING 
+        //UPDATES A REPLY AND RETURNS THE POST THE UPDATED REPLY 
         updateReply: (parent,args) => {
             // if(!req.isAuth) {
             //     throw new Error("unathenticated")
@@ -127,8 +117,6 @@ const replyResolver = {
             else {      
                 let filter = {_id: args.id}; 
                 let updatedReply; 
-                // let userPoints; 
-                // let userId; 
                 let pointsAdded; 
                 //update reply 
                 //first have to get old points 
@@ -146,9 +134,6 @@ const replyResolver = {
                     return db.Reply.findOneAndUpdate(filter,{points:newPoints}, {new: true})
                 }).then(reply => {
                     updatedReply = {...reply._doc}; 
-                    // userPoints = updatedReply.author.points + pointsAdded; 
-                    // userId = updatedReply.author._id; 
-                    // console.log(userId); 
                     
                     //need to update the pointsByCategory
                     filter = {
@@ -172,10 +157,6 @@ const replyResolver = {
                     })
                 
                 })
-                // .then(result => {
-                //     //now update the user 
-                //     return db.User.findByIdAndUpdate(userId,{points:userPoints})
-                // })
                 .then(userUpdated => {
                     return updatedReply; 
                 })
@@ -185,7 +166,7 @@ const replyResolver = {
                 })
             }
         }, 
-        //DELETES A REPLY AND RETURNS THE UPDATED POST IT BELONGS TO - WORKING 
+        //DELETES A REPLY AND RETURNS THE UPDATED POST IT BELONGS TO 
         deleteReply: (parent,args) => {
             // if(!req.isAuth) {
             //     throw new Error("unathenticated")
@@ -194,7 +175,6 @@ const replyResolver = {
             let postId; 
             return db.Reply.findOne({_id:args.id}
             ).then(reply => {
-                
                 postId = reply._doc.post._id; 
                 //delete the reply 
                 return db.Reply.deleteOne({_id:args.id})
@@ -222,9 +202,7 @@ createPointsByCategoryFunction = (args) => {
     //save to database
     return db.PointsByCategory
     .create(newObj).then(result => {
-        pointsByCategoryResult = {...result._doc
-            //_id: result.id
-        }; 
+        pointsByCategoryResult = {...result._doc }; 
         console.log(args.user); 
         return db.User.findById(args.user)
     }).then(user => {
@@ -242,7 +220,7 @@ createPointsByCategoryFunction = (args) => {
     .catch(err => {
         console.log(err); 
         throw err; 
-    })//
+    })
 
 }
 
@@ -257,11 +235,7 @@ createPostsByCategoryFunction = (args) => {
     //save to database
     return db.PostsByCategory
     .create(newObj).then(result => {
-        //return the new user
-        //return a null value for the password 
-        postsByCategoryResult = {...result._doc
-            //_id: result.id
-        }; 
+        postsByCategoryResult = {...result._doc }; 
         return db.User.findById(userId)
     }).then(user => {
         if(!user) {
@@ -269,7 +243,7 @@ createPostsByCategoryFunction = (args) => {
         }
         //add to user's array 
         user.postsByCategory.push(postsByCategoryResult)
-        //update ust 
+        //update user
         return user.save()
     }).then(userResult => {
         return postsByCategoryResult; 
@@ -279,6 +253,5 @@ createPostsByCategoryFunction = (args) => {
         throw err; 
     })
 }
-
 
 module.exports = replyResolver; 

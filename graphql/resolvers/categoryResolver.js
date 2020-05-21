@@ -3,14 +3,15 @@ const db = require("../../models");
 
 const categoryResolver = {
     Category: {
-       async subcategories(parent, args, context) {
+        //populate subcategories 
+        async subcategories(parent, args, context) {
            const subcategoriesByCategory = await db.Subcategory.find({category: parent._id}); 
            
            return subcategoriesByCategory; 
-       }
+        }
     },
     RootQuery: {
-        //GETS A SINGLE CATEGORY - WORKING 
+        //GETS A SINGLE CATEGORY 
         category: (parent, args) => {
             return db.Category.findOne({_id:args.id}).then(category=> {
                 if(category) {
@@ -26,26 +27,19 @@ const categoryResolver = {
             })
 
         },
-        //GETS ALL CATEGORIES - WORKING 
+        //GETS ALL CATEGORIES
         categories: (parent, args) => {
             //return here so graphql knows we are doing something async and wont return until done 
-            return db.Category
-            //TODO: specify args in the {} for the data we want back
-            .find({}).then(categories => {
+            return db.Category.find({}).then(categories => {
                 if(categories) {
                     //map so that we're not returning all the metadata
-                    //have to convert the id to a string otherwise we will get an error (TODO: maybe we dont need to do this)
-                        return categories.map(category => {
-                        return {...category._doc, 
-                            //_id: post.id
-                            //date_created: new Data(post._doc.date_created).toISOString(); 
-                        }
+                    return categories.map(category => {
+                        return {...category._doc}
                     })
                 }
                 else {
                     return null; 
-                }
-                
+                }    
             }).catch(err => {
                 console.log(err); 
                 throw err; 
@@ -53,8 +47,8 @@ const categoryResolver = {
         }
     },
     RootMutation: {
-        //CREATES A CATEGORY - WORKING 
-        //this query probably wont be hit outside of development (unless categories are added in the future)
+        //CREATES A CATEGORY 
+        //this query probably wont be hit outside of development 
         createCategory: (parent, args, req) => {
             //create 
             const newCategory = new db.Category({
@@ -66,18 +60,15 @@ const categoryResolver = {
             return db.Category.create(newCategory).then(result => {
                 //result refers to the post that we just created 
                 console.log(result);
-                //...result._doc returns result without all the associated metadata 
-                //specify result.id otherwise we will get an error (TODO - maybe dont need this?)
-                return {...result._doc, 
-                    //_id: result.id
-                };  
+
+                return {...result._doc };  
             })
             .catch(err => {
                 console.log(err); 
                 throw err; 
             })
         },
-        //UPDATES A CATEGORY - WORKING
+        //UPDATES A CATEGORY 
         updateCategory: (parent, args) => {
             const filter = {_id: args.id}; 
             
@@ -93,6 +84,5 @@ const categoryResolver = {
         }
     }
 }
-
 
 module.exports = categoryResolver; 

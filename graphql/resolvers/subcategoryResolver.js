@@ -4,10 +4,12 @@ const mongoose = require("mongoose");
 
 const subcategoryResolver = {
     Subcategory: {
+        //populate posts 
         async posts(parent, args, context) {
             const posts = await db.Post.find({subcategory: parent._id})
             return posts; 
         },
+        //populate category 
         async category(parent, args, context) {
             const category = await db.Category.findOne({id: mongoose.ObjectId(parent.category)})
             return category; 
@@ -23,7 +25,6 @@ const subcategoryResolver = {
                 else {
                     return null; 
                 }
-                
             })
             .catch(err => {
                 console.log(err); 
@@ -33,23 +34,17 @@ const subcategoryResolver = {
         //GET ALL CATEGORIES 
         subcategories: (parent,args) => {
             //return here so graphql knows we are doing something async and wont return until done 
-            return db.Subcategory
-            //TODO: specify args in the {} for the data we want back
-            .find({}).then(subcategories => {
+            return db.Subcategory.find({})
+            .then(subcategories => {
                 if(subcategories) {
                     //map so that we're not returning all the metadata
-                    //have to convert the id to a string otherwise we will get an error (TODO: maybe we dont need to do this)
                     return subcategories.map(subcategory => {
-                        return {...subcategory._doc, 
-                            //_id: post.id
-                            //date_created: new Data(post._doc.date_created).toISOString(); 
-                        }
+                        return {...subcategory._doc}
                     })
                 }
                 else {
                     return null; 
-                }
-                    
+                } 
             }).catch(err => {
                 console.log(err); 
                 throw err; 
@@ -57,7 +52,7 @@ const subcategoryResolver = {
         }
     },
     RootMutation: { 
-        //CREATE SUBCATEGORY AND RETURN IT - WORKING
+        //CREATE SUBCATEGORY AND RETURN IT 
         createSubcategory: (parent,args) => {
             //create 
             console.log(args)
@@ -69,13 +64,8 @@ const subcategoryResolver = {
             let createdSubcategory;
             //store category to database 
             return db.Subcategory.create(newSubcategory).then(result => {
-                //result refers to the post that we just created 
-                console.log(result);
-                //...result._doc returns result without all the associated metadata 
-                //specify result.id otherwise we will get an error (TODO - maybe dont need this?)
-                createdSubcategory = {...result._doc, 
-                    //_id: result.id
-                };  
+                //result refers to the cat that we just created 
+                createdSubcategory = {...result._doc};  
 
                 return db.Category.findById(args.subcategoryInput.categoryId)
             }).then(category => {

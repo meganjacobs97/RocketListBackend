@@ -3,6 +3,7 @@ const mongoose = require("mongoose")
 
 const postsByCategoryResolver = {
     PostsByCategory: {
+        //populate category
         async category(parent, args, context) {
             console.log(parent)
             console.log(parent.category)
@@ -10,6 +11,7 @@ const postsByCategoryResolver = {
             console.log(category)
             return category;
         },
+        //populate user 
         async user(parent, args, context) {
             const user = await db.User.findOne({id: mongoose.ObjectId(parent.user)})
             console.log(user)
@@ -79,11 +81,7 @@ createPostsByCategoryFunc = (args) => {
     //save to database
     return db.PostsByCategory
     .create(newObj).then(result => {
-        //return the new user
-        //return a null value for the password 
-        postsByCategoryResult = {...result._doc
-            //_id: result.id
-        }; 
+        postsByCategoryResult = {...result._doc}; 
         return db.User.findById(args.userId)
     }).then(user => {
         if(!user) {
@@ -91,7 +89,7 @@ createPostsByCategoryFunc = (args) => {
         }
         //add to user's array 
         user.postsByCategory.push(postsByCategoryResult)
-        //update ust 
+        //update user 
         return user.save()
     }).then(userResult => {
         return postsByCategoryResult; 

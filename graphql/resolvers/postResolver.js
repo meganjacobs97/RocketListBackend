@@ -3,7 +3,7 @@ const db = require("../../models");
 
 const postResolver = {
     RootQuery: {
-        //GETS A POST - WORKING 
+        //GETS A POST 
         post: (parent, args) => {
             return db.Post.findOne({_id:args.id}).then(post=> {
                 if(post) {
@@ -20,9 +20,8 @@ const postResolver = {
             })
 
         },
-        //GETS ALL POSTS - WORKING 
+        //GETS ALL POSTS -
         posts: (parent, args) => {
-            
             //return here so graphql knows we are doing something async and wont return until done 
             console.log(args); 
             let filter; 
@@ -46,10 +45,8 @@ const postResolver = {
                             returnPosts[i].replies = sortRepliesByPoints(returnPosts[i].replies); 
                         }        
                     }
-                    
                     return returnPosts; 
                 }
-                
             }).catch(err => {
                 console.log(err); 
                 throw err; 
@@ -57,8 +54,8 @@ const postResolver = {
         }
     },
     RootMutation: {
-        //CREATE A POST - WORKING 
-        //createPost accepts a list of arguments - argument lists can be added to any query, not just mutations
+        //CREATE A POST 
+        //createPost accepts a list of arguments
         createPost: (parent, args) => {
             // if(!req.isAuth) {
             //     throw new Error("unathenticated")
@@ -69,8 +66,6 @@ const postResolver = {
                 body: args.postInput.body || "",
                 //post will always be unlocked upon creation
                 is_locked: false,
-                //date_created: new Date(Date.now()),
-                //date_created: new Data(args.postInput.date).toISOString(); 
                 points: 0,
                 subcategory: args.postInput.subcategoryId,
                 author: args.postInput.authorId,
@@ -78,18 +73,12 @@ const postResolver = {
             })
             //to store the post that we are creating so that we can return it at the end 
             let createdPost; 
-            let numUserPosts; 
             let filter; 
             //store post to database 
             return db.Post
             .create(newPost).then(result => {
                 //result refers to the post that we just created 
-            
-                //...result._doc returns result without all the associated metadata 
-                //specify result.id otherwise we will get an error (TODO - maybe dont need this?)
-                createdPost = {...result._doc, 
-                    //_id: result.id
-                };  
+                createdPost = {...result._doc };  
                 return db.User.findById(args.postInput.authorId)
             })
             .then(user => {
@@ -99,19 +88,11 @@ const postResolver = {
                 }
                 //add created post to the user 
                 user.posts.push(newPost); 
-                //grab current numposts and increment 
-                // numUserPosts = user.numPosts + 1; 
-                // console.log(user.numPosts);
-                // console.log(numUserPosts); 
+
                 //update user
                 return user.save(); 
 
             })
-            // .then(userResult => {
-            //     //result now refers to the updated user
-            //     //still need to update numPosts 
-            //     return db.User.findByIdAndUpdate(args.postInput.authorId,{numPosts: numUserPosts},{new:true})
-            // })
             .then(userUpdateResult => {
                 //update the subcategory 
                 return db.Subcategory.findById(args.postInput.subcategoryId)
@@ -144,11 +125,10 @@ const postResolver = {
                 }
                 //otherwise we can update
                 else {
-                    return db.PostsByCategory.findOneAndUpdate(filter,{posts: numUserPosts}, {new: true})
+                    return db.PostsByCategory.findOneAndUpdate(filter,{posts: postsByCategory.posts+1}, {new: true})
                 }
             })
             .then(updatedPostByCategory => {
-                
                 //instead we have to return the createdpost
                 return createdPost; 
             })
@@ -178,10 +158,8 @@ const postResolver = {
             else {      
                 let filter = {_id: args.id}; 
                 let updatedPost; 
-                //let userPoints; 
-                //let userId; 
                 let pointsAdded; 
-                //update reply 
+
                 //first have to get old points 
                 return db.Post.findById(args.id)
                 .then(oldPost => {
@@ -197,9 +175,7 @@ const postResolver = {
                     return db.Post.findOneAndUpdate(filter,{points:newPoints}, {new: true})
                 }).then(post => {
                     updatedPost = {...post._doc}; 
-                    //userPoints = updatedPost.author.points + pointsAdded; 
-                    //userId = updatedPost.author._id; 
-                    
+
                     //need to update the pointsByCategory
                     filter = {
                         user: updatedPost.author._id,
@@ -222,9 +198,6 @@ const postResolver = {
                     })
                 
                 })
-                // .then(result => {
-                //     return db.User.findByIdAndUpdate(userId,{points:userPoints})
-                // })
                 .then(result => {
                     return updatedPost; 
                 })
@@ -247,13 +220,9 @@ createPostsByCategoryFunc = (args) => {
     })
     let postsByCategoryResult; 
     //save to database
-    return db.PostsByCategory
-    .create(newObj).then(result => {
-        //return the new user
-        //return a null value for the password 
-        postsByCategoryResult = {...result._doc
-            //_id: result.id
-        }; 
+    return db.PostsByCategory.create(newObj)
+    .then(result => {
+        postsByCategoryResult = {...result._doc }; 
         return db.User.findById(args.userId)
     }).then(user => {
         if(!user) {
@@ -261,7 +230,7 @@ createPostsByCategoryFunc = (args) => {
         }
         //add to user's array 
         user.postsByCategory.push(postsByCategoryResult)
-        //update ust 
+        //update user
         return user.save()
     }).then(userResult => {
         return postsByCategoryResult; 
@@ -283,9 +252,7 @@ createPointsByCategoryFunc = (args) => {
     //save to database
     return db.PointsByCategory
     .create(newObj).then(result => {
-        pointsByCategoryResult = {...result._doc
-            //_id: result.id
-        }; 
+        pointsByCategoryResult = {...result._doc }; 
         console.log(args.user); 
         return db.User.findById(args.user)
     }).then(user => {

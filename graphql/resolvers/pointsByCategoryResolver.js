@@ -4,11 +4,13 @@ const mongoose = require("mongoose");
 
 const pointsByCategoryResolver = {
     PointsByCategory: {
+        //populate category
         async category(parent, args, context) { 
             const category = await db.Category.findOne({ id: mongoose.ObjectId(parent.category) });
 
             return category;
         },
+        //populate user 
         async user(parent, args, context) {
             const user = await db.User.findOne({id: mongoose.ObjectId(parent.user)})
 
@@ -16,7 +18,7 @@ const pointsByCategoryResolver = {
         }
     },
     RootQuery: {
-        //takes in a userId & categoryId. returns the points for that category for that user - WORKING 
+        //takes in a userId & categoryId. returns the points for that category for that user 
         pointsByCategoryByUser: (parent,args) => {
             return db.PointsByCategory.findOne({
                 user: args.userId,
@@ -30,7 +32,7 @@ const pointsByCategoryResolver = {
                 throw err; 
             })
         },
-        //takes in a category id and return an array of pointsbycategory objects sorted in descending order by points - WORKING
+        //takes in a category id and return an array of pointsbycategory objects sorted in descending order by points 
         //THIS IS HOW YOU SORT TOP USERS (POINTS-WISE) BY CATEGORY
         pointsByCategory: (parent,args) => {
             return db.PointsByCategory.find({

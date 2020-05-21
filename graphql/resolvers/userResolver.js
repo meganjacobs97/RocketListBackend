@@ -2,12 +2,12 @@
 const bcrypt = require("bcrypt"); 
 //for user authentication 
 const jwt = require("jsonwebtoken"); 
-
 //import mongoDB models 
 const db = require("../../models"); 
 
 const userResolver = {
     User: {
+        //populates posts 
         async posts(parent, args, context) {
             const userPosts = await db.Post.find({ author: parent._id });
 
@@ -15,6 +15,7 @@ const userResolver = {
 
             return userPosts;
         },
+        //calculates number of posts 
         async points(parent, args, context) {
             const userPoints = (
                 await db.PointsByCategory.find({ user: parent._id })
@@ -26,6 +27,7 @@ const userResolver = {
     
             return userPoints;
         },
+        //calculates number of posts 
         async numPosts(parent,args,context) {
             const userPosts = (
                 await db.PostsByCategory.find({user: parent._id})
@@ -36,16 +38,19 @@ const userResolver = {
             )
             return userPosts;
         },
+        //populates points by category 
         async pointsByCategory(parent,args,context) {
             const pointsByCategory = await db.PointsByCategory.find({user: parent._id})
 
             return pointsByCategory
         },
+        //populates posts by category
         async postsByCategory(parent,args,context) {
             const postsByCategory = await db.PostsByCategory.find({user: parent._id})
 
             return postsByCategory; 
         },
+        //populates replies 
         async replies(parent,args,context) {
             const userReplies = await db.Post.find({ author: parent._id });
 
@@ -54,6 +59,7 @@ const userResolver = {
     },
     RootQuery: {
         login: (parent,{username,password}) => {
+            console.log("in login")
             let userRes; 
             return db.User.findOne({username:username})
             .then(user => {
@@ -68,17 +74,15 @@ const userResolver = {
                 if(!isEqual) {
                     throw new Error("Password is incorrect"); 
                 }
-                const token = jwt.sign({userId: userRes.id,username:userRes.username},process.env("SESSION_SECRET"),{
-                    expiresIn: '3h'
-                })
-                return ({userId:userRes.id,token:token,tokenExpiration:3})
+                console.log("user logged in")
+                return ({userId:userRes.id})
             })
             .catch(err => {
                 console.log(err); 
                 throw err; 
             })
         }, 
-        //GETS A USER - WORKING 
+        //GETS A USER 
         user: (parent,args) => {
             // if(!req.isAuth) {
             //     throw new Error("unathenticated")
@@ -91,7 +95,7 @@ const userResolver = {
                 throw err; 
             }) 
         }, 
-        //GETS ALL USERS - WORKING
+        //GETS ALL USERS 
         //takes in optional booleans to sort all users by points and to sort all users by number of posts and replies 
         users: (parent,args) => {
             // if(!req.isAuth) {
@@ -105,9 +109,8 @@ const userResolver = {
                 filter = {}
             }
             //return here so graphql knows we are doing something async and wont return until done 
-            return db.User
-            //TODO: specify args in the {} for the data we want back
-            .find(filter).then(users => {
+            return db.User.find(filter)
+            .then(users => {
                 //map so that we're not returning all the metadata
                 //overwrite password to be null so we're not returning it 
                 return users.map(user => {
@@ -129,37 +132,34 @@ const userResolver = {
                 console.log(err); 
                 throw err; 
             })
-
         }
     },
     RootMutation: {
-        //CREATES A USER - WORKING
+        //CREATES A USER
         createUser: (parent,args) => {
-            //see if user with that email address already exists - TODO; change later?? not sure if we need this validation here or if we can just handle it with the database model 
-            return db.User.findOne({email: args.userInput.email}).then(user => {
+            console.log("in create user")
+            //see if user with that email address already exists 
+            return db.User.findOne({username: args.userInput.username}).then(user => {
                 if(user) {
-                    throw new Error("email taken"); 
+                    throw new Error("username taken"); 
                 }
             
                 const newUser = new db.User({
                     username: args.userInput.username, 
                     //encrypt password
                     password: bcrypt.hashSync(args.userInput.password,bcrypt.genSaltSync(12),null),
-                    email: args.userInput.email,
+                    email: args.userInput.email || "",
                     points: 0,
                     numPosts: 0,
                     isMod: args.userInput.isMod || false
                 })
-                return db.User
                 //save to database
-                .create(newUser).then(result => {
-                    console.log(result);
+                return db.User.create(newUser)
+                .then(result => {
+                    console.log("user created")
                     //return the new user
                     //return a null value for the password 
-                    return {...result._doc, password: null, 
-                        //_id: result.id
-                    }; 
-
+                    return {...result._doc, password: null}; 
                 })
             })
             .then().catch(err => {
@@ -167,7 +167,7 @@ const userResolver = {
                 throw err; 
             })
         },
-        //UPDATES A USER - WORKING 
+        //UPDATES A USER 
         updateUser: (parent,args) => {  
             // if(!req.isAuth) {
             //     throw new Error("unathenticated")
@@ -199,8 +199,6 @@ sortByPosts = (unsorted) => {
     })
     //return sorted
     return sortedResults; 
-
-
 }
 sortByPoints = (unsorted) => {
     let sortedResults = unsorted; 
@@ -216,6 +214,5 @@ sortByPoints = (unsorted) => {
     //return sorted
     return sortedResults; 
 }
-
 
 module.exports = userResolver; 

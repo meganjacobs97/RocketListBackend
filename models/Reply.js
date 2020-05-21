@@ -1,7 +1,5 @@
 const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
-
-// const autopopulate = require("mongoose-autopopulate"); 
+const Schema = mongoose.Schema; 
 
 const ReplySchema = new Schema({
     body: {
@@ -12,22 +10,17 @@ const ReplySchema = new Schema({
     post: {
         type: Schema.Types.ObjectId,
         ref: "Post",
-        // autopopulate: true
     },
     author: {
         type: Schema.Types.ObjectId,
         ref: "User",
-        // autopopulate: true
     },
     category: {
         type: Schema.Types.ObjectId, 
         ref: "Category",
-        // autopopulate: true
     },
     points: Number
 });
-
-// ReplySchema.plugin(autopopulate); 
 
 const Reply = mongoose.model("Reply", ReplySchema);
 
