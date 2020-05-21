@@ -11,7 +11,10 @@ const replyResolver = {
         }, 
         //populate author 
         async author(parent, args, context) {
+            console.log("\n\n\n\n\n" + parent); 
             const user = await db.User.findOne({id: mongoose.ObjectId(parent.author)})
+            console.log("parent.author",parent.author)
+            console.log("user",user)
             return user; 
         },
         //populate category
@@ -20,7 +23,23 @@ const replyResolver = {
             return category; 
         }
     },
+    RootQuery: {
+        //RETURN REPLIES BY POST ID
+        replies: (parent,args) => {
+            console.log(args); 
+            return db.Reply.find({post:args.postId})
+            .then(replies => {
+                console.log(replies)
+                return replies; 
+            })
+            .catch(err => {
+                console.log(err); 
+                throw err; 
+            })
+        }
+    },
     RootMutation: {
+         
         //CREATE A REPLY AND RETURN REPLY 
         createReply: (parent,args) => {
             // if(!req.isAuth) {

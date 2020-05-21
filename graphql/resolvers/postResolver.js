@@ -33,18 +33,20 @@ const postResolver = {
             }
             return db.Post.find(filter)
             .then(posts => {
-                 
+                console.log(posts)
                 if(!args.postInput || !args.postInput.sortRepliesByPoints) {
                     return posts; 
                 }
                 else {
                     //sort replies 
                     let returnPosts = posts; 
+                    console.log(returnPosts);
                     for(let i = 0; i < returnPosts.length; i++) {
                         if(returnPosts[i].replies && returnPosts[i].replies.length > 0) { 
                             returnPosts[i].replies = sortRepliesByPoints(returnPosts[i].replies); 
                         }        
                     }
+                    console.log(returnPosts)
                     return returnPosts; 
                 }
             }).catch(err => {

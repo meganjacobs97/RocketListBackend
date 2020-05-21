@@ -107,7 +107,8 @@ const schema = gql`
 
     type RootQuery {
         posts(postInput: PostInput): [Post!]!
-        users(sortByPosts: Boolean,sortByPoints: Boolean,userInput: UserInput): [User!]!        
+        users(sortByPosts: Boolean,sortByPoints: Boolean,userInput: UserInput): [User!]!    
+        replies(postId: ID!): [Reply]    
         categories: [Category!]!
         category(id: ID!): Category 
         subcategory(id: ID!): Subcategory
@@ -118,6 +119,7 @@ const schema = gql`
         pointsByCategory(categoryId: ID!): [PointsByCategory]
         postsByCategoryByUser(userId: ID!,categoryId: ID!): PostsByCategory
         postsByCategory(categoryId: ID!): [PostsByCategory]
+        postsByUser(userId: ID!): [PostsByCategory]
     }
     
     type RootMutation {
