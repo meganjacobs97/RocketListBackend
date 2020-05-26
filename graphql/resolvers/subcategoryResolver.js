@@ -7,7 +7,7 @@ const subcategoryResolver = {
         //populate posts 
         async posts(parent, args, context) {
             const posts = await db.Post.find({subcategory: parent._id})
-            return posts; 
+            return posts.reverse(); 
         },
         //populate category 
         async category(parent, args, context) {

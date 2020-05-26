@@ -7,12 +7,22 @@ const replyResolver = {
         //populate post 
         async post(parent,args,context) {
             const post = await db.Post.findOne({id:mongoose.ObjectId(parent.post)}); 
+            if(post.replies) {
+                post.replies = post.replies.reverse();
+            }
             return post; 
         }, 
         //populate author 
         async author(parent, args, context) {
             const retUser = await db.User.findOne({_id: parent.author})
-  
+            if(retUser.posts) {
+                retUser.posts = retUser.posts.reverse(); 
+                for(let i = 0; i < retUser.posts.length; i++) {
+                    if(retUser.posts[i].replies) {
+                        retUser.posts[i].replies = retUser.posts[i].replies.reverse(); 
+                    }
+                }
+            }
             return retUser; 
         },
         //populate category
@@ -27,8 +37,7 @@ const replyResolver = {
             console.log(args); 
             return db.Reply.find({post:args.postId})
             .then(replies => {
-                console.log(replies)
-                return replies; 
+                return replies.reverse(); 
             })
             .catch(err => {
                 console.log(err); 

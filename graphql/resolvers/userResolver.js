@@ -11,9 +11,7 @@ const userResolver = {
         async posts(parent, args, context) {
             const userPosts = await db.Post.find({ author: parent._id });
 
-            console.log('userPosts', userPosts);
-
-            return userPosts;
+            return userPosts.reverse();
         },
         //calculates number of posts 
         async points(parent, args, context) {
@@ -54,7 +52,7 @@ const userResolver = {
         async replies(parent,args,context) {
             const userReplies = await db.Post.find({ author: parent._id });
 
-            return userReplies;
+            return userReplies.reverse();
         }
     },
     RootQuery: {

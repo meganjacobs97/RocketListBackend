@@ -7,7 +7,10 @@ const postResolver = {
         post: (parent, args) => {
             return db.Post.findOne({_id:args.id}).then(post=> {
                 if(post) {
-                    return {...post._doc}; 
+                    if(post.replies) {
+                        post.replies = post.replies.reverse();
+                    }
+                    return post; 
                 }
                 else {
                     return null; 
@@ -35,7 +38,12 @@ const postResolver = {
             .then(posts => {
                 console.log(posts)
                 if(!args.postInput || !args.postInput.sortRepliesByPoints) {
-                    return posts; 
+                    for(let i = 0; i < posts.length; i++) {
+                        if(posts[i].replies) {
+                            posts[i].replies = posts[i].replies.reverse();
+                        }
+                    }
+                    return posts.reverse(); 
                 }
                 else {
                     //sort replies 
@@ -46,8 +54,7 @@ const postResolver = {
                             returnPosts[i].replies = sortRepliesByPoints(returnPosts[i].replies); 
                         }        
                     }
-                    console.log(returnPosts)
-                    return returnPosts; 
+                    return returnPosts.reverse() 
                 }
             }).catch(err => {
                 console.log(err); 

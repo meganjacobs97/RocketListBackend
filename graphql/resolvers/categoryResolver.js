@@ -5,9 +5,21 @@ const categoryResolver = {
     Category: {
         //populate subcategories 
         async subcategories(parent, args, context) {
-           const subcategoriesByCategory = await db.Subcategory.find({category: parent._id}); 
-           
-           return subcategoriesByCategory; 
+            const subcategoriesByCategory = await db.Subcategory.find({category: parent._id}); 
+
+            for(let i = 0; i < subcategoriesByCategory.length; i++) {
+                if(subcategoriesByCategory[i].posts) {
+                    subcategoriesByCategory[i].posts = subcategoriesByCategory[i].posts.reverse(); 
+                    for(let j = 0; j < subcategoriesByCategory[i].posts.length; j++) {
+                        if(subcategoriesByCategory[i].posts[j].replies) {
+                            subcategoriesByCategory[i].posts[j].replies = subcategoriesByCategory[i].posts[j].replies.reverse(); 
+                        }
+                    }
+                }
+            }
+            
+        
+            return subcategoriesByCategory; 
         }
     },
     RootQuery: {
