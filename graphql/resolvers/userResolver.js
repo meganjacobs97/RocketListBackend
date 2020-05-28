@@ -1,7 +1,9 @@
 //for password encryption 
 const bcrypt = require("bcrypt"); 
 //for user authentication 
-const jwt = require("jsonwebtoken"); 
+const jsonwebtoken = require('jsonwebtoken');
+
+//import { JWT_SECRET } from '../../../config';
 //import mongoDB models 
 const db = require("../../models"); 
 
@@ -109,8 +111,8 @@ const userResolver = {
         }
     },
     RootMutation: {
+        //to delete
         login: (parent,{username,password}) => {
-            console.log("in login")
             let userRes; 
             return db.User.findOne({username:username})
             .then(user => {
@@ -133,6 +135,74 @@ const userResolver = {
                 throw err; 
             })
         }, 
+        //authentication 
+        authenticate: async (
+            _,
+            { credentials: { username, password } },
+            context
+        ) => {
+            try {
+                const user = await checkUserCredentials(username, password);
+
+                if (user) {
+                    const jwt = jsonwebtoken.sign(
+                        { userId: user.id },
+                        process.env.JWT_SECRET,
+                        { expiresIn: '30d' }
+                    );
+
+                    return { 
+                        username: user.username, 
+                        userId: user.id, 
+                        token: jwt
+                    };
+                } else {
+                    return null;
+                }
+            } catch (err) {
+                console.error(err);
+
+                return null;
+            }
+        },
+        //create an account and return the authenticated user 
+        createAcc: (parent,args) => {
+            //check to see if user exists 
+            return db.User.findOne({username: args.credentials.username})
+            .then(user => {
+                if(user) throw new Error("username taken"); 
+                console.log(args); 
+                const newUser = new db.User({ 
+                    username: args.credentials.username, 
+                    password: bcrypt.hashSync(args.credentials.password,bcrypt.genSaltSync(12),null), 
+                    email: "", 
+                    isMod: false
+                })
+                //save to database 
+                return db.User.create(newUser)
+                .then(result => {
+                    console.log("user created")
+
+                    //create token
+                    const jwt = jsonwebtoken.sign(
+                        { userId: result.id },
+                        process.env.JWT_SECRET,
+                        { expiresIn: '30d' }
+                    )
+                    
+                    //store username token and id in return value 
+                    return({
+                        username: result.username, 
+                        userId: result.id,
+                        token: jwt
+                    })
+                })
+            })
+            .then().catch(err => {
+                console.log(err);
+                throw err; 
+            })
+        },
         //CREATES A USER
         createUser: (parent,args) => {
             //see if user with that email address already exists 
@@ -146,8 +216,6 @@ const userResolver = {
                     //encrypt password
                     password: bcrypt.hashSync(args.userInput.password,bcrypt.genSaltSync(12),null),
                     email: args.userInput.email || "",
-                    points: 0,
-                    numPosts: 0,
                     isMod: args.userInput.isMod || false
                 })
                 //save to database
@@ -210,6 +278,29 @@ sortByPoints = (unsorted) => {
     })
     //return sorted
     return sortedResults; 
+}
+//helper function for authentication 
+checkUserCredentials = (username,password) => {
+    let userRes; 
+    return db.User.findOne({username:username})
+    .then(user => {
+        if(!user) {
+            return ""; 
+        }
+        userRes = user; 
+        return bcrypt.compare(password,userRes.password); 
+        
+    })
+    .then(isEqual => {
+        if(!isEqual) {
+            return ""; 
+        }
+        return (userRes)
+    })
+    .catch(err => {
+        console.log(err); 
+        throw err; 
+    })
 }
 
 module.exports = userResolver; 

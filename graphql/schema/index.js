@@ -1,4 +1,4 @@
-//allows us to define a schema for our API
+ //allows us to define a schema for our API
 const { gql } = require("apollo-server-express")
 
 //! means doesnt accept null values 
@@ -7,6 +7,11 @@ const { gql } = require("apollo-server-express")
 //RootQuery and RootMutation is where our resolvers get pointed to; to be defined in resolvers > index.js
 //TODO: user authentication 
 const schema = gql`
+    type AuthenticatedUser {
+        token: String!
+        username: String!
+        userId: String!
+    }
     type User {
         _id: ID!
         username: String!
@@ -67,7 +72,10 @@ const schema = gql`
         posts: Int
     }
 
-
+    input Credentials {
+        username: String 
+        password: String
+    }
     input PostInput {
         date_created: String
         title: String
@@ -125,6 +133,8 @@ const schema = gql`
     type RootMutation {
         createPost(postInput: PostInput): Post
         createUser(userInput: UserInput): User
+        authenticate(credentials: Credentials!): AuthenticatedUser
+        createAcc(credentials: Credentials): AuthenticatedUser!
         login(username: String!, password: String!): User
         createCategory(categoryInput: CategoryInput): Category
         createReply(replyInput: ReplyInput): Reply 
