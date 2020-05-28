@@ -128,16 +128,23 @@ const postResolver = {
                 return db.PostsByCategory.findOne(filter)
             })
             .then(postsByCategory => {
+                console.log("args")
+                console.log(args); 
+                console.log("result of found")
+                console.log(postsByCategory)
                 //if null, need to create 
                 if(!postsByCategory) {
-                return createPostsByCategoryFunc({userId: args.postInput.authorId, categoryId:args.postInput.categoryId, posts:1})
+                    console.log("created")
+                    return createPostsByCategoryFunc({userId: args.postInput.authorId, categoryId:args.postInput.categoryId, posts:1})
                 }
                 //otherwise we can update
                 else {
+                    console.log("updated")
                     return db.PostsByCategory.findOneAndUpdate(filter,{posts: postsByCategory.posts+1}, {new: true})
                 }
             })
             .then(updatedPostByCategory => {
+                console.log(updatedPostByCategory)
                 //instead we have to return the createdpost
                 return createdPost; 
             })

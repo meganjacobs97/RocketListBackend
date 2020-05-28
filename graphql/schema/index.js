@@ -66,9 +66,9 @@ const schema = gql`
         points: Int 
     }
     type PostsByCategory {
-        _id: ID! 
-        category: Category! 
-        user: User! 
+        _id: ID
+        category: Category
+        user: User
         posts: Int
     }
 
