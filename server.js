@@ -33,7 +33,6 @@ const server = new ApolloServer({
   resolvers: graphqlResolvers,
   graphiql: true,
   cors: true,
-  credentials: true,
   formatError(e) {
       console.error(e);
       console.log(JSON.stringify(e, null, '\t'));
