@@ -36,7 +36,6 @@ const postResolver = {
             }
             return db.Post.find(filter)
             .then(posts => {
-                console.log(posts)
                 if(!args.postInput || !args.postInput.sortRepliesByPoints) {
                     for(let i = 0; i < posts.length; i++) {
                         if(posts[i].replies) {
@@ -48,7 +47,6 @@ const postResolver = {
                 else {
                     //sort replies 
                     let returnPosts = posts; 
-                    console.log(returnPosts);
                     for(let i = 0; i < returnPosts.length; i++) {
                         if(returnPosts[i].replies && returnPosts[i].replies.length > 0) { 
                             returnPosts[i].replies = sortRepliesByPoints(returnPosts[i].replies); 
@@ -128,23 +126,16 @@ const postResolver = {
                 return db.PostsByCategory.findOne(filter)
             })
             .then(postsByCategory => {
-                console.log("args")
-                console.log(args); 
-                console.log("result of found")
-                console.log(postsByCategory)
                 //if null, need to create 
                 if(!postsByCategory) {
-                    console.log("created")
                     return createPostsByCategoryFunc({userId: args.postInput.authorId, categoryId:args.postInput.categoryId, posts:1})
                 }
                 //otherwise we can update
                 else {
-                    console.log("updated")
                     return db.PostsByCategory.findOneAndUpdate(filter,{posts: postsByCategory.posts+1}, {new: true})
                 }
             })
             .then(updatedPostByCategory => {
-                console.log(updatedPostByCategory)
                 //instead we have to return the createdpost
                 return createdPost; 
             })
