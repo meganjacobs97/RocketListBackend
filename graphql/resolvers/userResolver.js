@@ -58,6 +58,20 @@ const userResolver = {
         }
     },
     RootQuery: {
+        //get current user information; takes in token and userid and returns user 
+        currentUser: (parent,args) => {
+            return jsonwebtoken.verify(args.token,process.env.JWT_SECRET,function(err,decodedToken) {
+                if (err) throw err; 
+                return db.User.findById(decodedToken.userId) 
+                .then(user => {
+                    return user; 
+                })
+            })
+            .catch(err => {
+                console.log(err); 
+                return err; 
+            })
+        },
         //GETS A USER 
         user: (parent,args) => {
             // if(!req.isAuth) {
@@ -146,7 +160,7 @@ const userResolver = {
 
                 if (user) {
                     const jwt = jsonwebtoken.sign(
-                        { userId: user.id },
+                        { userId: user.id, username: user.username},
                         process.env.JWT_SECRET,
                         { expiresIn: '30d' }
                     );
@@ -185,7 +199,7 @@ const userResolver = {
 
                     //create token
                     const jwt = jsonwebtoken.sign(
-                        { userId: result.id },
+                        { userId: result.id,username: user.username },
                         process.env.JWT_SECRET,
                         { expiresIn: '30d' }
                     )

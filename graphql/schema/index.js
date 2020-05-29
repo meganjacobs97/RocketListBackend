@@ -115,7 +115,8 @@ const schema = gql`
 
     type RootQuery {
         posts(postInput: PostInput): [Post!]!
-        users(sortByPosts: Boolean,sortByPoints: Boolean,userInput: UserInput): [User!]!    
+        users(sortByPosts: Boolean,sortByPoints: Boolean,userInput: UserInput): [User!]!   
+        currentUser(token: String): User 
         replies(postId: ID!): [Reply]    
         categories: [Category!]!
         category(id: ID!): Category 
