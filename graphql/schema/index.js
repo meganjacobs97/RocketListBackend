@@ -105,6 +105,7 @@ const schema = gql`
     input CategoryInput {
         name: String
         description: String
+        sortByPosts: Boolean
     }
     input SubcategoryInput {
         name: String
@@ -118,7 +119,7 @@ const schema = gql`
         users(sortByPosts: Boolean,sortByPoints: Boolean,userInput: UserInput): [User!]!   
         currentUser(token: String): User 
         replies(postId: ID!): [Reply]    
-        categories: [Category!]!
+        categories(categoryInput: CategoryInput): [Category!]!
         category(id: ID!): Category 
         subcategory(id: ID!): Subcategory
         subcategories: [Subcategory!]!

@@ -40,23 +40,50 @@ const categoryResolver = {
 
         },
         //GETS ALL CATEGORIES
-        categories: (parent, args) => {
+        async categories(parent, args) {
             //return here so graphql knows we are doing something async and wont return until done 
-            return db.Category.find({}).then(categories => {
-                if(categories) {
-                    //map so that we're not returning all the metadata
-                    return categories.map(category => {
-                        return {...category._doc}
-                    })
+            let categories = await db.Category.find({})
+            
+            if(categories) {
+                //map so that we're not returning all the metadata
+                cats = categories.map(category => {
+                    return {...category._doc}
+                })
+            }
+            else {
+                return null; 
+            }   
+            
+            if(args.categoryInput && args.categoryInput.sortByPosts) {
+                let catsSorted = [...cats]; 
+                console.log(catsSorted)
+                //for each category need to add up the total number of posts 
+                for(let i = 0; i < catsSorted.length; i++) {
+                    let posts = 0; 
+                    for(let j = 0; j < catsSorted[i].subcategories.length; j++) {
+                        //find the subcat by id and grab the posts 
+                        posts += await subcatposts(catsSorted[i].subcategories[j]);
+                    }
+                    console.log(posts); 
+                    console.log(catsSorted[i])
+                    catsSorted[i].posts = posts; 
                 }
-                else {
-                    return null; 
-                }    
-            }).catch(err => {
-                console.log(err); 
-                throw err; 
-            })
-        }
+                console.log(catsSorted)
+                catsSorted.sort(function(a, b){
+                    if(a.posts > b.posts) { 
+                        return -1; 
+                    }
+                    else if(a.posts < b.posts) {
+                        return 1; 
+                    }
+                    return 0;
+                })
+                return catsSorted; 
+            }
+            else {
+                return cats; 
+            }   
+        }       
     },
     RootMutation: {
         //CREATES A CATEGORY 
@@ -94,6 +121,17 @@ const categoryResolver = {
             })
         }
     }
+}
+
+subcatposts = (id) => {
+    return db.Post.find({subcategory:id})
+    .then(posts => {
+        return posts.length; 
+    })
+    .catch(err => {
+        console.log(err); 
+        return err; 
+    })
 }
 
 module.exports = categoryResolver; 
