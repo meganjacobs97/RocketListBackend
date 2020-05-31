@@ -266,12 +266,13 @@ const userResolver = {
 }
 //helper by functions 
 sortByPosts = (unsorted) => {
+    console.log(unsorted)
     let sortedResults = unsorted; 
     sortedResults.sort(function(a, b){
-        if(a.numPosts > b.numPosts) { 
+        if(a.posts.length > b.posts.length) { 
             return -1; 
         }
-        else if(a.numPosts < b.numPosts) {
+        else if(a.posts.length < b.posts.length) {
             return 1; 
         }
         return 0;

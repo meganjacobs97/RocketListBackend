@@ -56,7 +56,7 @@ const categoryResolver = {
             
             if(args.categoryInput && args.categoryInput.sortByPosts) {
                 let catsSorted = [...cats]; 
-                console.log(catsSorted)
+                
                 //for each category need to add up the total number of posts 
                 for(let i = 0; i < catsSorted.length; i++) {
                     let posts = 0; 
@@ -64,11 +64,10 @@ const categoryResolver = {
                         //find the subcat by id and grab the posts 
                         posts += await subcatposts(catsSorted[i].subcategories[j]);
                     }
-                    console.log(posts); 
-                    console.log(catsSorted[i])
+                    
                     catsSorted[i].posts = posts; 
                 }
-                console.log(catsSorted)
+                
                 catsSorted.sort(function(a, b){
                     if(a.posts > b.posts) { 
                         return -1; 
