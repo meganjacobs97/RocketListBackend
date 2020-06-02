@@ -266,7 +266,6 @@ const userResolver = {
 }
 //helper by functions 
 sortByPosts = (unsorted) => {
-    console.log(unsorted)
     let sortedResults = unsorted; 
     sortedResults.sort(function(a, b){
         if(a.posts.length > b.posts.length) { 

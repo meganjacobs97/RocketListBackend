@@ -10,7 +10,9 @@ const postsByCategoryResolver = {
         },
         //populate user 
         async user(parent, args, context) {
-            const user = await db.User.findOne({id: parent.user})
+            console.log("getting user")
+            const user = await db.User.findOne({_id: parent.user})
+            // console.log(user)
             return user; 
         }
     },
