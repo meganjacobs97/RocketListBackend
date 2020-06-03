@@ -5,7 +5,7 @@ const postsByCategoryResolver = {
     PostsByCategory: {
         //populate category
         async category(parent, args, context) {
-            const category = await db.Category.findOne({ id: parent.category });
+            const category = await db.Category.findOne({ _id: parent.category });
             return category;
         },
         //populate user 
