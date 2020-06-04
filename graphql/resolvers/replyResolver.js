@@ -39,7 +39,7 @@ const replyResolver = {
             return db.Reply.find({ post: args.postId })
                 .then(replies => {
                     for (let i = 0; i < replies.length; i++) {
-                        replies[i].date_created = reduceDate(replies.date_created);
+                        replies[i].date_created = reduceDate(replies[i].date_created);
                     }
                     return replies.reverse();
 

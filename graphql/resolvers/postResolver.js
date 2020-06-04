@@ -9,9 +9,11 @@ const postResolver = {
                 if (post) {
                     if (post.replies) {
                         post.replies = post.replies.reverse();
-                        for (let i = 0; i < post.replies.length; i++) {
-                            post.replies[i].date_created = reduceDate(post.replies[i].date_created);
-                        }
+                        // for (let i = 0; i < post.replies.length; i++) {
+                        //     console.log(post.replies[i])
+                        //     post.replies[i].date_created = reduceDate(post.replies[i].date_created) || "";
+                        //     console.log(post.replies[i])
+                        // }
                     }
                     post.date_created = reduceDate(post.date_created);
                     return post;
