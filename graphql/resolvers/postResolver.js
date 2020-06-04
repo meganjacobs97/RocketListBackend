@@ -10,6 +10,7 @@ const postResolver = {
                     if(post.replies) {
                         post.replies = post.replies.reverse();
                     }
+                    post.date_created = reduceDate(post.date_created); 
                     return post; 
                 }
                 else {
@@ -36,6 +37,11 @@ const postResolver = {
             }
             return db.Post.find(filter)
             .then(posts => {
+                //override date
+                for(let i = 0; i < posts.length; i++) {
+                    posts[i].date_created = reduceDate(posts[i].date_created)
+                }
+                //check if we do not need to sort replies by points 
                 if(!args.postInput || !args.postInput.sortRepliesByPoints) {
                     for(let i = 0; i < posts.length; i++) {
                         if(posts[i].replies) {
@@ -216,6 +222,18 @@ const postResolver = {
             
         }
     }
+}
+
+//reduce the date string
+reduceDate = (dateCreated) => {
+    const spaceIndex = dateCreated.indexOf(" ") + 1; 
+    let plusIndex = dateCreated.indexOf('\+'); 
+    console.log(plusIndex)
+    if(plusIndex === -1) {
+        plusIndex = dateCreated.indexOf('\-');
+    }
+    
+    return dateCreated.substring(spaceIndex,plusIndex); 
 }
 
 //for creating a postbycategory document 

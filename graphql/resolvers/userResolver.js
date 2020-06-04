@@ -12,7 +12,9 @@ const userResolver = {
         //populates posts 
         async posts(parent, args, context) {
             const userPosts = await db.Post.find({ author: parent._id });
-
+            for(let i = 0; i < userPosts.length; i++) {
+                userPosts[i].date_created = reduceDate(userPosts[i].date_created); 
+            }
             return userPosts.reverse();
         },
         //calculates number of posts 
@@ -315,6 +317,15 @@ checkUserCredentials = (username,password) => {
         console.log(err); 
         throw err; 
     })
+}
+//reduce the date string
+reduceDate = (dateCreated) => {
+    const spaceIndex = dateCreated.indexOf(" ") + 1; 
+    let plusIndex = dateCreated.indexOf('\+'); 
+    if(plusIndex === -1) {
+        plusIndex = dateCreated.indexOf('\-');
+    }
+    return dateCreated.substring(spaceIndex,plusIndex); 
 }
 
 module.exports = userResolver; 

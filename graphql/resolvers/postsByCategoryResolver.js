@@ -84,7 +84,7 @@ createPostsByCategoryFunc = (args) => {
     const newObj = new db.PostsByCategory({
         user: args.userId, 
         category: args.categoryId,
-        posts: 0
+        posts: 1
     })
     let postsByCategoryResult; 
     //save to database

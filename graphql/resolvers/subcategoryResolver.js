@@ -7,11 +7,15 @@ const subcategoryResolver = {
         //populate posts 
         async posts(parent, args, context) {
             const posts = await db.Post.find({subcategory: parent._id})
+            for(let i = 0; i < posts.length; i++) {
+                posts[i].date_created = reduceDate(posts[i].date_created); 
+            }
             return posts.reverse(); 
         },
         //populate category 
         async category(parent, args, context) {
-            const category = await db.Category.findOne({id: mongoose.ObjectId(parent.category)})
+            console.log(parent)
+            const category = await db.Category.findOne({_id: parent.category})
             return category; 
         }
     }, 
@@ -101,6 +105,16 @@ const subcategoryResolver = {
             })
         }
     }
+}
+//reduce the date string
+reduceDate = (dateCreated) => {
+    const spaceIndex = dateCreated.indexOf(" ") + 1; 
+    let plusIndex = dateCreated.indexOf('\+'); 
+    if(plusIndex === -1) {
+        plusIndex = dateCreated.indexOf('\-');
+    }
+    console.log(plusIndex)
+    return dateCreated.substring(spaceIndex,plusIndex); 
 }
 
 module.exports = subcategoryResolver; 

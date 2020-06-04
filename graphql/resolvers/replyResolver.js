@@ -10,6 +10,7 @@ const replyResolver = {
             if(post.replies) {
                 post.replies = post.replies.reverse();
             }
+            post.date_created = reduceDate(post.date_created);
             return post; 
         }, 
         //populate author 
@@ -247,7 +248,16 @@ createPointsByCategoryFunction = (args) => {
     })
 
 }
-
+//reduce the date string
+reduceDate = (dateCreated) => {
+    const spaceIndex = dateCreated.indexOf(" ") + 1; 
+    let plusIndex = dateCreated.indexOf('\+'); 
+    if(plusIndex === -1) {
+        plusIndex = dateCreated.indexOf('\-');
+    }
+    console.log(spaceIndex,plusIndex)
+    return dateCreated.substring(spaceIndex,plusIndex); 
+}
 createPostsByCategoryFunction = (args) => {
     let userId = args.user; 
     const newObj = new db.PostsByCategory({
