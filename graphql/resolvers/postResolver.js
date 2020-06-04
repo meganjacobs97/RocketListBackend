@@ -10,7 +10,7 @@ const postResolver = {
                     if (post.replies) {
                         post.replies = post.replies.reverse();
                         for (let i = 0; i < post.replies.length; i++) {
-                            post.replies[i].date_created = reduceDate(post.replies.date_created);
+                            post.replies[i].date_created = reduceDate(post.replies[i].date_created);
                         }
                     }
                     post.date_created = reduceDate(post.date_created);
