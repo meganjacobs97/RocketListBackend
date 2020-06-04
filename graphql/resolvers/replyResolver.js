@@ -255,7 +255,6 @@ reduceDate = (dateCreated) => {
     if(plusIndex === -1) {
         plusIndex = dateCreated.indexOf('\-');
     }
-    console.log(spaceIndex,plusIndex)
     return dateCreated.substring(spaceIndex,plusIndex); 
 }
 createPostsByCategoryFunction = (args) => {

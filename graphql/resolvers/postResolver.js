@@ -228,7 +228,6 @@ const postResolver = {
 reduceDate = (dateCreated) => {
     const spaceIndex = dateCreated.indexOf(" ") + 1; 
     let plusIndex = dateCreated.indexOf('\+'); 
-    console.log(plusIndex)
     if(plusIndex === -1) {
         plusIndex = dateCreated.indexOf('\-');
     }

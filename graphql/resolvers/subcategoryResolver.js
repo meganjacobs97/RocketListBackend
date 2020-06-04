@@ -113,7 +113,6 @@ reduceDate = (dateCreated) => {
     if(plusIndex === -1) {
         plusIndex = dateCreated.indexOf('\-');
     }
-    console.log(plusIndex)
     return dateCreated.substring(spaceIndex,plusIndex); 
 }
 
