@@ -1,4 +1,4 @@
- //allows us to define a schema for our API
+//allows us to define a schema for our API
 const { gql } = require("apollo-server-express")
 
 //! means doesnt accept null values 
@@ -19,6 +19,7 @@ const schema = gql`
         email: String
         points: Int
         isMod: Boolean
+        darkType: Boolean
         numPosts: Int
         posts: [Post]
         replies: [Reply]
@@ -93,6 +94,7 @@ const schema = gql`
         email: String
         points: Int
         isMod: Boolean
+        darkType: Boolean
     }
     input ReplyInput {
         date_created: String

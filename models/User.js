@@ -16,6 +16,8 @@ const UserSchema = new Schema({
     type: String,
   },
   isMod: Boolean,
+  // true for dark mode
+  darkType: Boolean,
   pointsByCategory: [
     {
       type: Schema.Types.ObjectId,
