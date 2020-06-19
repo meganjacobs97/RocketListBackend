@@ -11,6 +11,7 @@ const schema = gql`
         token: String!
         username: String!
         userId: String!
+        darkType: Boolean
     }
     type User {
         _id: ID!
