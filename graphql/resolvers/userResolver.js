@@ -204,7 +204,7 @@ const userResolver = {
 
                             //create token
                             const jwt = jsonwebtoken.sign(
-                                { userId: result.id, username: user.username, darkType: user.darkType },
+                                { userId: result.id, username: result.username, darkType: result.darkType },
                                 process.env.JWT_SECRET,
                                 { expiresIn: '30d' }
                             )
